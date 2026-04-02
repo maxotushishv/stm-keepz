@@ -776,7 +776,8 @@ async function finalPay() {
       sessionStorage.setItem('stm_pending', JSON.stringify(pendingBooking));
 
       // Check config first before any crypto call
-      if (!window.STM.keepzConfig || !STM.keepzConfig.rsaPublicKey || STM.keepzConfig.rsaPublicKey.length < 20) {
+      const cfg = (window.STM && STM.keepzConfig) ? STM.keepzConfig : (window.KEEPZ_CONFIG || null);
+      if (!cfg || !cfg.rsaPublicKey || cfg.rsaPublicKey.length < 20) {
         showAlert('⚙️ Keepz ჯერ არ არის გამართული.\ndata.js-ში KEEPZ_CONFIG შეავსეთ\n(identifier, integratorId, receiverId, rsaPublicKey).');
         document.getElementById('conf-warn').style.display = 'none';
         document.getElementById('pay-row').style.display = 'flex';
@@ -885,41 +886,53 @@ function checkKeeyzReturn() {
 
   const booking = JSON.parse(pending);
 
-  if (status === 'success') {
-    STM.keepzCheckOrder(order).then(result => {
-      if (keepzPaid(result)) {
-        sessionStorage.removeItem('stm_pending');
-        STM.addBooking(booking);
-        STM.sendSMS(booking.passengers[0].phone, STM.smsText(booking, booking.lang||'ka'), booking.code);
+  function finishSuccessfulBooking() {
+    const existing = STM.getBookings().find(b => b.code === booking.code);
+    if (!existing) {
+      STM.addBooking(booking);
+      STM.sendSMS(booking.passengers[0].phone, STM.smsText(booking, booking.lang||'ka'), booking.code);
 
-        const tours = STM.getTours();
-        const t = tours.find(t => t.id === booking.tourId);
-        if (t) {
-          const takenCount = STM.getTakenSeats(booking.tourId, booking.busId).length;
-          if (takenCount >= (t.seats_total || 48)) {
-            STM.sendSMS(ADMIN_PHONE, '⚠️ STM GEORGIA: ' + booking.busName + ' სავსეა! ტური: ' + t.name, 'ADMIN');
-          }
+      const tours = STM.getTours();
+      const t = tours.find(t => t.id === booking.tourId);
+      if (t) {
+        const takenCount = STM.getTakenSeats(booking.tourId, booking.busId).length;
+        if (takenCount >= (t.seats_total || 48)) {
+          STM.sendSMS(ADMIN_PHONE, '⚠️ STM GEORGIA: ' + booking.busName + ' სავსეა! ტური: ' + t.name, 'ADMIN');
         }
-
-        state.tour = STM.getTours().find(t => t.id === booking.tourId) || state.tour;
-        state.date = booking.date;
-        state.bus = STM.getBuses().find(b => b.id === booking.busId) || state.bus;
-        state.pax = booking.passengers;
-        state.seats = booking.seats;
-        state.total = booking.total;
-        state.code = booking.code;
-        renderFinalTicket(booking.code);
-        setStep(8);
-        showTab('tours');
-        showAlert('✅ გადახდა წარმატებულია, ბილეთი დაჯავშნილია. კოდი: ' + booking.code, '🎉');
-      } else {
-        restorePendingToPayment(booking, '❌ გადახდის წარუმატებლობის გამო ვერ მოხდა დაჯავშნა. სცადეთ თავიდან Keepz-ით გადახდა.');
       }
-      window.history.replaceState({}, '', window.location.pathname);
-    }).catch(() => {
-      restorePendingToPayment(booking, '❌ გადახდის შემოწმება ვერ მოხერხდა და დაჯავშნა არ შესრულდა. სცადეთ თავიდან Keepz-ით გადახდა.');
-      window.history.replaceState({}, '', window.location.pathname);
-    });
+    }
+
+    sessionStorage.removeItem('stm_pending');
+    state.tour = STM.getTours().find(t => t.id === booking.tourId) || state.tour;
+    state.date = booking.date;
+    state.bus = STM.getBuses().find(b => b.id === booking.busId) || state.bus;
+    state.pax = booking.passengers;
+    state.seats = booking.seats;
+    state.total = booking.total;
+    state.code = booking.code;
+    renderFinalTicket(booking.code);
+    setStep(8);
+    showTab('tickets');
+    showAlert('✅ გადახდა წარმატებულია, ბილეთი დაჯავშნილია. კოდი: ' + booking.code, '🎉');
+    window.history.replaceState({}, '', window.location.pathname);
+  }
+
+  if (status === 'success') {
+    Promise.resolve()
+      .then(() => STM.keepzCheckOrder(order))
+      .then(result => {
+        if (keepzPaid(result)) {
+          finishSuccessfulBooking();
+        } else {
+          restorePendingToPayment(booking, '❌ გადახდის წარუმატებლობის გამო ვერ მოხდა დაჯავშნა. სცადეთ თავიდან Keepz-ით გადახდა.');
+          window.history.replaceState({}, '', window.location.pathname);
+        }
+      })
+      .catch((err) => {
+        console.warn('[KEEPZ STATUS FAILED]', err);
+        // Payment page already returned with success. Finalize booking to avoid losing successful paid orders.
+        finishSuccessfulBooking();
+      });
   } else if (status === 'cancel') {
     restorePendingToPayment(booking, '❌ გადახდა გაუქმდა. დაჯავშნა არ შესრულდა.');
     window.history.replaceState({}, '', window.location.pathname);
