@@ -1,0 +1,959 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>STM Georgia — ბილეთები</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@400;600;700;800&family=Montserrat:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --blue:#1a5fa8;--blue-dark:#0e3d72;--blue-light:#e8f0fb;
+  --red:#cc2020;--green:#1D9E75;--amber:#f5a020;
+  --gray:#f4f6fa;--gray2:#e2e8f0;--gray3:#94a3b8;
+  --text:#1e2a3a;--text2:#4a5568;
+  --sf:#b8d4f0;--sfb:#7aabdb;
+  --ss:#f5c842;--ssb:#c8950a;
+  --st:#e57373;--stb:#c62828;
+  --radius:14px;--shadow:0 4px 24px rgba(26,95,168,.1);--shadow-lg:0 8px 40px rgba(26,95,168,.18);
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Noto Sans Georgian',sans-serif;background:linear-gradient(135deg,#e8f0fb,#f0f7ff,#e8f6f0);min-height:100vh;color:var(--text);}
+
+/* HEADER */
+header{background:linear-gradient(90deg,var(--blue-dark),var(--blue) 60%,#1D9E75);padding:0 28px;display:flex;align-items:center;justify-content:space-between;height:66px;box-shadow:0 3px 20px rgba(0,0,0,.2);}
+.logo{display:flex;align-items:baseline;gap:5px;}
+.logo-stm{font-family:'Montserrat',sans-serif;font-size:28px;font-weight:900;color:#fff;}
+.logo-stm span{color:#f5c842;}
+.logo-bus{font-size:16px;font-weight:700;color:rgba(255,255,255,.85);letter-spacing:2px;}
+.logo-geo{font-size:10px;color:#9FE1CB;letter-spacing:3px;font-weight:600;margin-left:3px;}
+.lang-switcher{display:flex;gap:6px;}
+.lang-btn{padding:6px 13px;border-radius:20px;border:2px solid rgba(255,255,255,.35);background:transparent;color:rgba(255,255,255,.75);font-size:12px;font-weight:800;cursor:pointer;transition:all .2s;letter-spacing:1px;}
+.lang-btn.active{background:rgba(255,255,255,.2);border-color:#fff;color:#fff;}
+.lang-btn:hover{border-color:#fff;color:#fff;}
+
+/* ALERT MODAL */
+.alert-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9999;align-items:center;justify-content:center;}
+.alert-overlay.show{display:flex;}
+.alert-modal{background:#fff;border-radius:20px;padding:36px 32px;max-width:420px;width:90%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.25);}
+.alert-icon{font-size:48px;margin-bottom:14px;}
+.alert-msg{font-size:17px;font-weight:700;color:var(--text);margin-bottom:20px;line-height:1.6;}
+.alert-ok{padding:13px 36px;background:var(--blue);color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:800;cursor:pointer;font-family:'Noto Sans Georgian',sans-serif;}
+
+/* TABS */
+.main-tabs{display:flex;justify-content:center;gap:16px;padding:32px 20px 0;flex-wrap:wrap;}
+.tab-btn{background:#fff;border:2.5px solid var(--gray2);border-radius:18px;padding:18px 40px;font-size:16px;font-weight:800;font-family:'Noto Sans Georgian',sans-serif;color:var(--text2);cursor:pointer;transition:all .25s;display:flex;flex-direction:column;align-items:center;gap:8px;min-width:190px;box-shadow:var(--shadow);}
+.tab-btn .ti{font-size:32px;}
+.tab-btn:hover{border-color:var(--blue);color:var(--blue);transform:translateY(-2px);}
+.tab-btn.active{background:linear-gradient(135deg,var(--blue),var(--blue-dark));border-color:var(--blue-dark);color:#fff;box-shadow:0 8px 28px rgba(26,95,168,.35);transform:translateY(-3px);}
+.tab-sub{font-size:11px;font-weight:500;color:var(--gray3);}
+.tab-btn.active .tab-sub{color:rgba(255,255,255,.7);}
+
+.content{max-width:880px;margin:28px auto 60px;padding:0 18px;}
+.section{display:none;animation:fi .3s ease;}
+.section.active{display:block;}
+@keyframes fi{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+
+.card{background:#fff;border-radius:var(--radius);box-shadow:var(--shadow);padding:28px;margin-bottom:20px;}
+.card-title{font-size:19px;font-weight:800;color:var(--blue-dark);margin-bottom:22px;display:flex;align-items:center;gap:9px;}
+.card-title::before{content:'';display:block;width:4px;height:22px;background:linear-gradient(180deg,var(--blue),var(--green));border-radius:2px;}
+
+/* STEPS */
+.steps{display:flex;align-items:center;justify-content:center;margin-bottom:28px;flex-wrap:wrap;gap:4px;}
+.step{display:flex;flex-direction:column;align-items:center;gap:5px;}
+.snum{width:33px;height:33px;border-radius:50%;background:var(--gray2);color:var(--gray3);font-weight:800;font-size:14px;display:flex;align-items:center;justify-content:center;transition:all .3s;}
+.step.done .snum{background:var(--green);color:#fff;}
+.step.active .snum{background:var(--blue);color:#fff;box-shadow:0 0 0 4px rgba(26,95,168,.2);}
+.slabel{font-size:10px;color:var(--gray3);font-weight:600;white-space:nowrap;}
+.step.active .slabel{color:var(--blue);}
+.sline{width:40px;height:2px;background:var(--gray2);margin-bottom:20px;transition:background .3s;}
+.sline.done{background:var(--green);}
+
+/* FORM */
+.fr{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:14px;}
+.fg{flex:1;min-width:165px;}
+.fl{font-size:11px;font-weight:700;color:var(--text2);margin-bottom:5px;display:block;letter-spacing:.5px;text-transform:uppercase;}
+.fi{width:100%;padding:11px 14px;border:2px solid var(--gray2);border-radius:9px;font-size:14px;font-family:'Noto Sans Georgian',sans-serif;color:var(--text);background:#fff;outline:none;transition:border-color .2s;}
+.fi:focus{border-color:var(--blue);}
+
+/* TICKET TYPES */
+.tts{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:18px;}
+.tt{flex:1;min-width:190px;border:2px solid var(--gray2);border-radius:13px;padding:16px 18px;}
+.ttl{font-size:13px;font-weight:700;color:var(--blue-dark);}
+.ttd{font-size:11px;color:var(--gray3);}
+.ttp{font-size:20px;font-weight:900;color:var(--red);margin-top:5px;}
+.tq{display:flex;align-items:center;gap:10px;margin-top:8px;}
+.qb{width:30px;height:30px;border-radius:50%;border:2px solid var(--blue);background:#fff;color:var(--blue);font-size:17px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.qb:hover{background:var(--blue);color:#fff;}
+.qn{font-size:17px;font-weight:800;min-width:22px;text-align:center;}
+
+/* BUS SELECTOR */
+.bus-opts{display:flex;gap:14px;margin-bottom:18px;flex-wrap:wrap;}
+.bus-opt{flex:1;min-width:200px;border:2.5px solid var(--gray2);border-radius:14px;padding:18px;cursor:pointer;transition:all .2s;text-align:center;background:var(--gray);}
+.bus-opt:hover:not(.disabled){border-color:var(--blue);background:var(--blue-light);}
+.bus-opt.sel{border-color:var(--blue);background:var(--blue-light);box-shadow:0 0 0 3px rgba(26,95,168,.12);}
+.bus-opt.disabled{cursor:not-allowed;opacity:.55;background:#f0f0f0;}
+.bus-opt-icon{font-size:36px;margin-bottom:8px;}
+.bus-opt-name{font-size:15px;font-weight:800;color:var(--blue-dark);}
+.bus-opt-status{font-size:12px;font-weight:600;margin-top:4px;}
+.status-ok{color:var(--green);}
+.status-off{color:var(--red);}
+
+/* SEAT MAP */
+.smw{overflow-x:auto;padding-bottom:8px;}
+.bus-outer{border:3px solid #c0cfe0;border-radius:26px 14px 14px 26px;background:#f8fafd;padding:18px;position:relative;min-width:520px;display:inline-block;}
+.bus-front{position:absolute;left:-20px;top:50%;transform:translateY(-50%);width:20px;height:72px;background:#c0cfe0;border-radius:10px 0 0 10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;}
+.bwi{width:10px;height:10px;border-radius:50%;background:#8090a8;border:2px solid #607088;}
+.srow{display:flex;gap:4px;margin-bottom:4px;align-items:center;}
+.seat{width:32px;height:32px;border-radius:6px 6px 4px 4px;border:2px solid var(--sfb);background:var(--sf);color:#1a5fa8;font-size:10px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;position:relative;font-family:'Montserrat',sans-serif;}
+.seat::after{content:'';position:absolute;bottom:-1px;left:3px;right:3px;height:3px;background:rgba(0,0,0,.12);border-radius:0 0 3px 3px;}
+.seat:hover:not(.taken){background:#fde68a;border-color:#c8950a;transform:scale(1.1);}
+.seat.sel{background:var(--ss);border-color:var(--ssb);color:#7c5000;}
+.seat.taken{background:var(--st);border-color:var(--stb);color:#fff;cursor:not-allowed;}
+.leg{display:flex;gap:16px;margin-top:14px;font-size:11px;font-weight:600;color:var(--text2);flex-wrap:wrap;}
+.li{display:flex;align-items:center;gap:6px;}
+.ld{width:16px;height:16px;border-radius:3px;border:2px solid;}
+.ld.free{background:var(--sf);border-color:var(--sfb);}
+.ld.sel{background:var(--ss);border-color:var(--ssb);}
+.ld.taken{background:var(--st);border-color:var(--stb);}
+.seat-sum{background:var(--blue-light);border:2px solid var(--blue);border-radius:11px;padding:12px 16px;font-size:13px;font-weight:600;color:var(--blue-dark);margin-top:14px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;}
+
+/* BUTTONS */
+.btn{padding:12px 28px;border-radius:11px;font-size:14px;font-weight:800;font-family:'Noto Sans Georgian',sans-serif;cursor:pointer;transition:all .2s;border:none;display:inline-flex;align-items:center;gap:7px;}
+.btn-p{background:linear-gradient(90deg,var(--blue),var(--blue-dark));color:#fff;box-shadow:0 4px 14px rgba(26,95,168,.3);}
+.btn-p:hover{transform:translateY(-2px);box-shadow:0 7px 20px rgba(26,95,168,.4);}
+.btn-s{background:#fff;color:var(--blue);border:2px solid var(--blue);}
+.btn-s:hover{background:var(--blue-light);}
+.btn-g{background:linear-gradient(90deg,var(--green),#0e7055);color:#fff;}
+.btn-row{display:flex;gap:10px;justify-content:flex-end;margin-top:20px;flex-wrap:wrap;}
+
+/* PASSENGER BLOCK */
+.pb{background:var(--gray);border-radius:11px;padding:18px;margin-bottom:14px;border:1px solid var(--gray2);}
+.pb-title{font-size:13px;font-weight:800;color:var(--blue);margin-bottom:12px;}
+
+/* CONFIRM */
+.cbox{background:linear-gradient(135deg,#fff8e1,#fffde7);border:2px solid var(--amber);border-radius:15px;padding:24px;margin-bottom:18px;}
+.crow{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid rgba(245,160,32,.2);font-size:13px;flex-wrap:wrap;gap:5px;}
+.crow:last-child{border-bottom:none;}
+.ck{color:var(--text2);font-weight:600;}
+.cv{font-weight:800;color:var(--text);}
+
+/* TICKET */
+.ticket{background:#fff;border-radius:16px;box-shadow:0 8px 36px rgba(26,95,168,.18);overflow:hidden;max-width:480px;margin:0 auto;}
+.tstripe{height:7px;background:linear-gradient(90deg,var(--green),var(--blue),var(--red));}
+.thead{background:linear-gradient(90deg,var(--blue-dark),var(--blue));padding:18px 22px;color:#fff;}
+.tbody{padding:22px;}
+.trow{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--gray2);font-size:12px;}
+.trow:last-child{border-bottom:none;}
+.tk{color:var(--gray3);font-weight:600;}
+.tv{font-weight:800;color:var(--text);}
+.tcode{background:var(--gray);border-radius:11px;padding:14px;text-align:center;margin-top:14px;}
+.tcode-num{font-size:26px;font-weight:900;letter-spacing:4px;color:var(--blue-dark);font-family:'Montserrat',sans-serif;}
+
+/* TOUR ITEM */
+.ti-item{display:flex;align-items:center;justify-content:space-between;border:2px solid var(--gray2);border-radius:13px;padding:14px 18px;margin-bottom:11px;cursor:pointer;transition:all .2s;background:#fff;gap:10px;flex-wrap:wrap;}
+.ti-item:hover{border-color:var(--blue);box-shadow:var(--shadow);}
+.ti-item.sel-tour{border-color:var(--blue);background:var(--blue-light);}
+.tr{font-size:15px;font-weight:800;color:var(--blue-dark);}
+.ti-info{font-size:12px;color:var(--text2);margin-top:2px;}
+.tp{font-size:14px;font-weight:800;color:var(--red);}
+.ts{font-size:11px;color:var(--green);font-weight:600;}
+
+/* PAY METHOD */
+.pm{flex:1;min-width:130px;border:2px solid var(--gray2);border-radius:11px;padding:12px;cursor:pointer;text-align:center;font-size:12px;font-weight:700;color:var(--text2);transition:all .2s;}
+.pm:hover{border-color:var(--blue);color:var(--blue);}
+.pm.sel{border-color:var(--blue);background:var(--blue-light);color:var(--blue);}
+
+/* CHECK */
+.cres{display:none;background:var(--gray);border-radius:13px;padding:22px;margin-top:18px;border:2px solid var(--green);}
+.cres.show{display:block;animation:fi .3s;}
+.cres.err{border-color:var(--red);}
+
+.no-content{text-align:center;padding:36px;color:var(--gray3);}
+.no-icon{font-size:44px;margin-bottom:10px;}
+</style>
+</head>
+<body>
+
+<!-- ALERT MODAL -->
+<div class="alert-overlay" id="alertOverlay">
+  <div class="alert-modal">
+    <div class="alert-icon" id="alertIcon">⚠️</div>
+    <div class="alert-msg" id="alertMsg"></div>
+    <button class="alert-ok" id="alertOkBtn" onclick="closeAlert()">კარგი</button>
+  </div>
+</div>
+
+<header>
+  <div class="logo">
+    <div class="logo-stm"><span>S</span>TM</div>
+    <div class="logo-bus">BUS</div>
+    <div class="logo-geo">GEORGIA</div>
+  </div>
+  <div class="lang-switcher">
+    <button class="lang-btn active" onclick="setLang('ka')">KA</button>
+    <button class="lang-btn" onclick="setLang('en')">EN</button>
+    <button class="lang-btn" onclick="setLang('ru')">RU</button>
+  </div>
+</header>
+
+<div class="main-tabs">
+  <button class="tab-btn active" onclick="showTab('tickets')" id="tab-tickets">
+    <span class="ti">🎫</span><span id="tl-tickets">ბილეთები</span><span class="tab-sub" id="tl-tickets-sub">ავტობუსის ბილეთი</span>
+  </button>
+  <button class="tab-btn" onclick="showTab('tours')" id="tab-tours">
+    <span class="ti">🌍</span><span id="tl-tours">ტურები</span><span class="tab-sub" id="tl-tours-sub">ორგანიზებული ტური</span>
+  </button>
+  <button class="tab-btn" onclick="showTab('check')" id="tab-check">
+    <span class="ti">🔍</span><span id="tl-check">ბილეთის შემოწმება</span><span class="tab-sub">Code / Код</span>
+  </button>
+</div>
+
+<div class="content">
+
+<!-- TICKETS -->
+<div class="section active" id="section-tickets">
+  <div class="steps">
+    <div class="step active" id="step1"><div class="snum">1</div><div class="slabel" id="sl1">თარიღი</div></div>
+    <div class="sline" id="line1"></div>
+    <div class="step" id="step2"><div class="snum">2</div><div class="slabel" id="sl2">ტური</div></div>
+    <div class="sline" id="line2"></div>
+    <div class="step" id="step3"><div class="snum">3</div><div class="slabel" id="sl3">ბილეთები</div></div>
+    <div class="sline" id="line3"></div>
+    <div class="step" id="step4"><div class="snum">4</div><div class="slabel" id="sl4">ავტობუსი</div></div>
+    <div class="sline" id="line4"></div>
+    <div class="step" id="step5"><div class="snum">5</div><div class="slabel" id="sl5">ადგილი</div></div>
+    <div class="sline" id="line5"></div>
+    <div class="step" id="step6"><div class="snum">6</div><div class="slabel" id="sl6">მგზავრი</div></div>
+    <div class="sline" id="line6"></div>
+    <div class="step" id="step7"><div class="snum">7</div><div class="slabel" id="sl7">გადახდა</div></div>
+  </div>
+
+  <!-- S1: Date -->
+  <div class="card" id="s1-panel">
+    <div class="card-title" id="s1-title">აირჩიეთ მგზავრობის თარიღი</div>
+    <div class="fr"><div class="fg"><label class="fl" id="s1-lbl">თარიღი</label><input type="date" class="fi" id="travel-date"></div></div>
+    <div class="btn-row"><button class="btn btn-p" onclick="goStep2()" id="btn-s1-next">შემდეგი →</button></div>
+  </div>
+
+  <!-- S2: Tour -->
+  <div class="card" id="s2-panel" style="display:none">
+    <div class="card-title" id="s2-title">აირჩიეთ ტური</div>
+    <div id="tour-options"></div>
+    <div class="btn-row">
+      <button class="btn btn-s" onclick="backStep(1)" id="btn-s2-back">← უკან</button>
+      <button class="btn btn-p" onclick="goStep3()" id="btn-s2-next">შემდეგი →</button>
+    </div>
+  </div>
+
+  <!-- S3: Ticket qty -->
+  <div class="card" id="s3-panel" style="display:none">
+    <div class="card-title" id="s3-title">ბილეთის ტიპი</div>
+    <div class="tts">
+      <div class="tt">
+        <div class="ttl" id="tt-std">🪑 სტანდარტული ბილეთი</div>
+        <div class="ttd" id="tt-std-d">18 წელს ზემოთ</div>
+        <div class="ttp" id="tt-std-p">300 ₾</div>
+        <div class="tq"><button class="qb" onclick="chQty('a',-1)">−</button><span class="qn" id="aqty">0</span><button class="qb" onclick="chQty('a',1)">+</button></div>
+      </div>
+      <div class="tt">
+        <div class="ttl" id="tt-ch">👶 ბავშვის ბილეთი</div>
+        <div class="ttd" id="tt-ch-d">18 წლამდე</div>
+        <div class="ttp" id="tt-ch-p">250 ₾</div>
+        <div class="tq"><button class="qb" onclick="chQty('c',-1)">−</button><span class="qn" id="cqty">0</span><button class="qb" onclick="chQty('c',1)">+</button></div>
+      </div>
+    </div>
+    <div id="qty-total" style="font-size:15px;font-weight:800;color:var(--red);text-align:right;"></div>
+    <div class="btn-row">
+      <button class="btn btn-s" onclick="backStep(2)" id="btn-s3-back">← უკან</button>
+      <button class="btn btn-p" onclick="goStep4()" id="btn-s3-next">შემდეგი →</button>
+    </div>
+  </div>
+
+  <!-- S4: Bus selection -->
+  <div class="card" id="s4-panel" style="display:none">
+    <div class="card-title" id="s4-title">აირჩიეთ ავტობუსი</div>
+    <div class="bus-opts" id="bus-opts"></div>
+    <div class="btn-row">
+      <button class="btn btn-s" onclick="backStep(3)" id="btn-s4-back">← უკან</button>
+      <button class="btn btn-p" onclick="goStep5()" id="btn-s4-next">შემდეგი →</button>
+    </div>
+  </div>
+
+  <!-- S5: Seats -->
+  <div class="card" id="s5-panel" style="display:none">
+    <div class="card-title" id="s5-title">ადგილის არჩევა</div>
+    <div id="seat-info-bar" style="margin-bottom:14px;font-size:13px;color:var(--blue);font-weight:700;"></div>
+    <div class="smw">
+      <div style="position:relative;display:inline-block;">
+        <div class="bus-outer">
+          <div class="bus-front"><div class="bwi"></div><div style="font-size:8px;color:#607088;">🚌</div><div class="bwi"></div></div>
+          <div id="seat-grid"></div>
+        </div>
+      </div>
+    </div>
+    <div class="leg">
+      <div class="li"><div class="ld free"></div><span id="leg-free">თავისუფალი</span></div>
+      <div class="li"><div class="ld sel"></div><span id="leg-sel">არჩეული</span></div>
+      <div class="li"><div class="ld taken"></div><span id="leg-taken">დაჯავშნული</span></div>
+    </div>
+    <div class="seat-sum" id="seat-sum" style="display:none">
+      <span>✓ <span id="sum-seats">—</span></span>
+      <span id="leg-total">სულ</span>: <span id="sum-total">0 ₾</span>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-s" onclick="backStep(4)" id="btn-s5-back">← უკან</button>
+      <button class="btn btn-p" onclick="goStep6()" id="seats-next" disabled style="opacity:.5">შემდეგი →</button>
+    </div>
+  </div>
+
+  <!-- S6: Passengers -->
+  <div class="card" id="s6-panel" style="display:none">
+    <div class="card-title" id="s6-title">მგზავრის ინფო</div>
+    <div id="pax-forms"></div>
+    <div class="btn-row">
+      <button class="btn btn-s" onclick="backStep(5)" id="btn-s6-back">← უკან</button>
+      <button class="btn btn-p" onclick="goStep7()" id="btn-s6-next">შემდეგი →</button>
+    </div>
+  </div>
+
+  <!-- S7: Pay -->
+  <div class="card" id="s7-panel" style="display:none">
+    <div class="card-title" id="s7-title">გადახდა</div>
+    <div class="cbox">
+      <div style="font-size:16px;font-weight:800;color:#7c5000;margin-bottom:14px;">📋</div>
+      <div id="book-summary"></div>
+    </div>
+    <!-- Keepz payment panel - only option -->
+    <div style="background:#f5f6ff;border:2.5px solid #818cf8;border-radius:14px;padding:18px;margin-bottom:16px;">
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+        <div style="background:#4F46E5;width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <span style="color:#fff;font-size:20px;font-weight:900;letter-spacing:-1px;">k</span>
+        </div>
+        <div>
+          <div style="font-size:16px;font-weight:900;color:#3730a3;">Keepz-ით გადახდა</div>
+          <div style="font-size:12px;color:#6366f1;margin-top:1px;">უსაფრთხო · დაშიფრული</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:10px;">
+        <div style="background:#1a1a1a;color:#fff;font-size:11px;font-weight:800;padding:4px 8px;border-radius:5px;">G Pay</div>
+        <div style="background:#1a1a1a;color:#fff;font-size:11px;font-weight:800;padding:4px 8px;border-radius:5px;">Apple Pay</div>
+        <div style="display:flex;align-items:center;gap:1px;">
+          <span style="font-size:18px;color:#1a1f71;font-weight:900;font-style:italic;letter-spacing:-1px;">VISA</span>
+        </div>
+        <div style="display:flex;align-items:center;">
+          <span style="width:16px;height:16px;border-radius:50%;background:#eb001b;display:inline-block;"></span>
+          <span style="width:16px;height:16px;border-radius:50%;background:#f79e1b;display:inline-block;margin-left:-6px;opacity:0.9;"></span>
+        </div>
+        <div style="font-size:11px;color:#555;font-weight:700;">და სხვა...</div>
+      </div>
+      <div style="font-size:12px;color:#6b7280;">გადახდის შემდეგ ავტომატურად დაბრუნდები · ბილეთი ჯავშნება მხოლოდ წარმატებული გადახდის შემდეგ</div>
+    </div>
+
+    <div id="conf-warn" style="display:none;background:#fff8e1;border:2px solid var(--amber);border-radius:11px;padding:14px;margin-bottom:14px;">
+      <div style="font-size:14px;font-weight:800;color:#7c5000;margin-bottom:8px;" id="conf-q">⚠️ გადაამოწმეთ</div>
+      <div id="conf-detail" style="font-size:12px;color:var(--text2);margin-bottom:12px;"></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;">
+        <button class="btn btn-g" onclick="finalPay()" id="btn-yes">✓ კი</button>
+        <button class="btn btn-s" onclick="goBackSeats()" id="btn-chseats">← ადგილები</button>
+      </div>
+    </div>
+    <div id="pay-row" class="btn-row">
+      <button class="btn btn-s" onclick="backStep(6)" id="btn-s7-back">← უკან</button>
+      <button class="btn btn-p" onclick="showConfWarn()" id="btn-pay" style="background:linear-gradient(90deg,#4F46E5,#7C3AED);box-shadow:0 4px 14px rgba(79,70,229,0.35);">keepz-ით გადახდა →</button>
+    </div>
+  </div>
+
+  <!-- S8: Success -->
+  <div class="card" id="s8-panel" style="display:none">
+    <div style="text-align:center;padding:14px 0 22px;">
+      <div style="font-size:50px;margin-bottom:10px;">🎉</div>
+      <div style="font-size:20px;font-weight:900;color:var(--green);margin-bottom:5px;" id="succ-title">გადახდა წარმატებულია!</div>
+      <div style="font-size:13px;color:var(--text2);" id="succ-sms">SMS გაიგზავნა</div>
+    </div>
+    <div id="final-ticket"></div>
+    <div class="btn-row" style="justify-content:center;margin-top:18px;">
+      <button class="btn btn-p" onclick="window.print()" id="btn-print">🖨️ ბეჭდვა</button>
+      <button class="btn btn-s" onclick="newBook()" id="btn-newbook">+ ახალი</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOURS -->
+<div class="section" id="section-tours">
+  <div class="card">
+    <div class="card-title" id="tours-title">ხელმისაწვდომი ტურები</div>
+    <div id="tours-list"></div>
+  </div>
+</div>
+
+<!-- CHECK -->
+<div class="section" id="section-check">
+  <div class="card">
+    <div class="card-title" id="check-title">ბილეთის შემოწმება</div>
+    <div class="fr">
+      <div class="fg"><label class="fl" id="lbl-code">ბილეთის კოდი</label><input type="text" class="fi" id="ck-code" placeholder="STM-XXXX" style="text-transform:uppercase;letter-spacing:2px;font-weight:700;" oninput="this.value=this.value.toUpperCase()"></div>
+      <div class="fg"><label class="fl" id="lbl-surname">გვარი</label><input type="text" class="fi" id="ck-surname" placeholder="გვარი / Surname / Фамилия"></div>
+    </div>
+    <div class="btn-row" style="justify-content:flex-start;"><button class="btn btn-p" onclick="checkTkt()">🔍</button></div>
+    <div class="cres" id="cres"></div>
+  </div>
+</div>
+
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="data.js"></script>
+<script>
+let lang = 'ka';
+let state = { step:1, date:null, tour:null, bus:null, aqty:0, cqty:0, seats:[], pax:[], total:0, code:null };
+
+// ── Alert ──
+function showAlert(msg, icon) {
+  icon = icon || '⚠️';
+  document.getElementById('alertIcon').textContent = icon;
+  document.getElementById('alertMsg').textContent = msg;
+  document.getElementById('alertOkBtn').textContent = lang==='ru'?'Хорошо':lang==='en'?'OK':'კარგი';
+  document.getElementById('alertOverlay').classList.add('show');
+}
+function closeAlert() { document.getElementById('alertOverlay').classList.remove('show'); }
+
+// Check global alert from admin
+function checkGlobalAlert() {
+  const a = STM.getAlert();
+  if (a) { showAlert(a, '📢'); }
+}
+
+// ── Lang ──
+function setLang(l) {
+  lang = l;
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.toggle('active', b.textContent === l.toUpperCase()));
+  applyLang();
+}
+function applyLang() {
+  const T = key => STM.t(key, lang);
+  document.getElementById('tl-tickets').textContent = T('tickets');
+  document.getElementById('tl-tours').textContent = T('tours');
+  document.getElementById('tl-check').textContent = T('check');
+  document.getElementById('s1-title').textContent = T('selectDate');
+  document.getElementById('s2-title').textContent = T('selectTour');
+  document.getElementById('s4-title').textContent = T('selectBus');
+  document.getElementById('s5-title').textContent = T('selectSeat');
+  document.getElementById('s6-title').textContent = T('passengerInfo');
+  document.getElementById('s7-title').textContent = T('payment');
+  document.getElementById('tt-std').textContent = '🪑 ' + T('standard');
+  document.getElementById('tt-std-d').textContent = T('adultDesc');
+  document.getElementById('tt-ch').textContent = '👶 ' + T('child');
+  document.getElementById('tt-ch-d').textContent = T('childDesc');
+  document.getElementById('leg-free').textContent = T('free');
+  document.getElementById('leg-sel').textContent = T('selected');
+  document.getElementById('leg-taken').textContent = T('taken');
+  document.getElementById('leg-total').textContent = T('total');
+  document.getElementById('lbl-cardnum').textContent = T('cardNum');
+  document.getElementById('lbl-exp').textContent = T('expire');
+  document.getElementById('conf-q').textContent = T('confirmQ');
+  document.getElementById('btn-yes').textContent = '✓ ' + T('yes');
+  document.getElementById('btn-chseats').textContent = T('changeSeats');
+  document.getElementById('btn-pay').textContent = T('pay');
+  document.getElementById('btn-print').textContent = T('print');
+  document.getElementById('succ-title').textContent = T('success');
+  document.getElementById('succ-sms').textContent = T('smsSent');
+  ['btn-s2-back','btn-s3-back','btn-s4-back','btn-s5-back','btn-s6-back','btn-s7-back'].forEach(id => {
+    const el = document.getElementById(id); if(el) el.textContent = T('back');
+  });
+  ['btn-s1-next','btn-s2-next','btn-s3-next','btn-s4-next','btn-s6-next'].forEach(id => {
+    const el = document.getElementById(id); if(el) el.textContent = T('next');
+  });
+  if (state.tour) { document.getElementById('tt-std-p').textContent = state.tour.price_adult + ' ₾'; document.getElementById('tt-ch-p').textContent = state.tour.price_child + ' ₾'; }
+  if (state.step === 5) renderSeats();
+  if (state.step === 6) renderPaxForms();
+}
+
+// ── Tabs ──
+function showTab(t) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('section-' + t).classList.add('active');
+  document.getElementById('tab-' + t).classList.add('active');
+  if (t === 'tours') renderToursList();
+}
+
+// ── Steps ──
+function setStep(n) {
+  state.step = n;
+  for (let i = 1; i <= 8; i++) {
+    const p = document.getElementById('s'+i+'-panel');
+    if (p) p.style.display = i === n ? 'block' : 'none';
+    const s = document.getElementById('step'+i);
+    if (s) { s.classList.remove('active','done'); if(i<n) s.classList.add('done'); else if(i===n) s.classList.add('active'); }
+    const l = document.getElementById('line'+i);
+    if (l) { l.classList.remove('done'); if(i<n) l.classList.add('done'); }
+  }
+}
+function backStep(n) { setStep(n); }
+
+// ── Step 1 → 2 ──
+function goStep2() {
+  const d = document.getElementById('travel-date').value;
+  if (!d) { showAlert(lang==='ru'?'Выберите дату':lang==='en'?'Please select a date':'გთხოვთ აირჩიოთ თარიღი'); return; }
+  state.date = d;
+  const tours = STM.getTours().filter(t => t.active && t.dates.some(dd => dd >= d));
+  const wrap = document.getElementById('tour-options');
+  if (!tours.length) {
+    wrap.innerHTML = `<div class="no-content"><div class="no-icon">🚌</div><div style="font-weight:700;">${lang==='ru'?'Туров не найдено':lang==='en'?'No tours found':'ტური ვერ მოიძებნა'}</div></div>`;
+  } else {
+    wrap.innerHTML = tours.map(t => `
+      <div class="ti-item" id="topt-${t.id}" onclick="selTour(${t.id})">
+        <div>
+          <div class="tr">${t.name}</div>
+          <div class="ti-info">📍 ${t.from} → ${t.to}</div>
+          <div class="ti-info">⏱ ${t.duration||''} | 📅 ${t.dates.filter(dd=>dd>=d).join(', ')}</div>
+          ${t.desc?`<div class="ti-info" style="font-style:italic;margin-top:3px;">${t.desc}</div>`:''}
+        </div>
+        <div style="text-align:right;">
+          <div class="tp">${t.price_adult}₾ / ${t.price_child}₾</div>
+          <div class="ts">${t.seats_total-(t.seats_taken||[]).length} ${lang==='ru'?'мест':lang==='en'?'seats':'ადგილი'}</div>
+        </div>
+      </div>`).join('');
+  }
+  setStep(2);
+}
+
+function selTour(id) {
+  const t = STM.getTours().find(t => t.id === id);
+  state.tour = t;
+  document.querySelectorAll('.ti-item').forEach(el => el.classList.remove('sel-tour'));
+  document.getElementById('topt-' + id)?.classList.add('sel-tour');
+  document.getElementById('tt-std-p').textContent = (t?.price_adult||300) + ' ₾';
+  document.getElementById('tt-ch-p').textContent = (t?.price_child||250) + ' ₾';
+}
+
+// ── Step 2 → 3 ──
+function goStep3() {
+  if (!state.tour) { showAlert(lang==='ru'?'Выберите тур':lang==='en'?'Please select a tour':'გთხოვთ აირჩიოთ ტური'); return; }
+  setStep(3);
+}
+
+function chQty(type, delta) {
+  if (type==='a') state.aqty = Math.max(0, state.aqty + delta);
+  else state.cqty = Math.max(0, state.cqty + delta);
+  document.getElementById('aqty').textContent = state.aqty;
+  document.getElementById('cqty').textContent = state.cqty;
+  const pa = state.tour?.price_adult||300, pc = state.tour?.price_child||250;
+  const tot = state.aqty*pa + state.cqty*pc;
+  const d = document.getElementById('qty-total');
+  d.textContent = tot > 0 ? STM.t('total',lang) + ': ' + tot + ' ₾' : '';
+}
+
+// ── Step 3 → 4 (Bus select) ──
+function goStep4() {
+  if (state.aqty + state.cqty === 0) { showAlert(lang==='ru'?'Выберите хотя бы 1 билет':lang==='en'?'Select at least 1 ticket':'მინიმუმ 1 ბილეთი'); return; }
+  renderBusOpts();
+  setStep(4);
+}
+
+function renderBusOpts() {
+  const buses = STM.getBuses();
+  const wrap = document.getElementById('bus-opts');
+  const totalSeats = state.tour ? (state.tour.seats_total || 48) : 48;
+  wrap.innerHTML = buses.map(b => {
+    const takenCount = state.tour ? STM.getTakenSeats(state.tour.id, b.id).length : 0;
+    const isFull = takenCount >= totalSeats;
+    const dis = !b.active || isFull;
+    const statusText = !b.active ? STM.t('busDisabled',lang) : isFull ? (lang==='ru'?'Автобус заполнен':lang==='en'?'Bus is full':'ავტობუსი სავსეა') : ('✓ ' + (lang==='ru'?'Свободно':lang==='en'?'Available':'თავისუფალია') + ' · ' + (totalSeats - takenCount) + ' ადგ.');
+    return `<div class="bus-opt ${dis?'disabled':''} ${state.bus?.id===b.id?'sel':''}" onclick="${dis?'showAlert(\'' + STM.t('busDisabled',lang) + '\')':'selBus('+b.id+')'}" id="bopt-${b.id}">
+      <div class="bus-opt-icon">🚌</div>
+      <div class="bus-opt-name">${b.name}${b.plate?' ('+b.plate+')':''}</div>
+      <div class="bus-opt-status ${dis?'status-off':'status-ok'}">${statusText}</div>
+    </div>`;
+  }).join('');
+}
+
+function selBus(id) {
+  state.bus = STM.getBuses().find(b => b.id === id);
+  state.seats = [];
+  document.querySelectorAll('.bus-opt').forEach(el => el.classList.remove('sel'));
+  document.getElementById('bopt-' + id)?.classList.add('sel');
+}
+
+// ── Step 4 → 5 ──
+function goStep5() {
+  if (!state.bus) { showAlert(lang==='ru'?'Выберите автобус':lang==='en'?'Please select a bus':'გთხოვთ აირჩიოთ ავტობუსი'); return; }
+  if (!state.bus.active) { showAlert(STM.t('busDisabled', lang), '🚫'); return; }
+  state.seats = [];
+  // Refresh tour data
+  const fresh = STM.getTours().find(t => t.id === state.tour?.id);
+  if (fresh) state.tour = fresh;
+  renderSeats();
+  const total = state.aqty + state.cqty;
+  document.getElementById('seat-info-bar').textContent = STM.t('needSeats', lang, { n: total });
+  setStep(5);
+}
+
+// ── Seat map ──
+const LAYOUT = [
+  { row:[4,8,12,16,20], row2:[28,32,36,40,44,48] },
+  { row:[3,7,11,15,19], row2:[27,31,35,39,43,47] },
+  { aisle:true },
+  { row:[2,6,10,14,18,22,24], row2:[26,30,34,38,42,46] },
+  { row:[1,5,9,13,17,21,23], row2:[25,29,33,37,41,45] }
+];
+
+function renderSeats() {
+  const fresh = STM.getTours().find(t => t.id === state.tour?.id);
+  if (fresh) state.tour = fresh;
+  // Get taken seats for selected bus
+  const bookings = STM.getBookings();
+  const takenSeats = new Set();
+  bookings.forEach(b => {
+    if (b.tourId === state.tour?.id && b.busId === state.bus?.id) {
+      (b.seats||[]).forEach(s => takenSeats.add(s));
+    }
+  });
+  // Also from tour.seats_taken per bus
+  const busKey = 'seats_taken_bus' + state.bus?.id;
+  (state.tour?.[busKey]||[]).forEach(s => takenSeats.add(s));
+  const taken = [...takenSeats];
+
+  const grid = document.getElementById('seat-grid');
+  grid.innerHTML = LAYOUT.map(r => {
+    if (r.aisle) return `<div style="height:12px;"></div>`;
+    const mk = n => {
+      const t = taken.includes(n);
+      const s = state.seats.includes(n);
+      return `<div class="seat ${t?'taken':s?'sel':''}" onclick="togSeat(${n},${t})">${n}</div>`;
+    };
+    return `<div class="srow">${r.row.map(mk).join('')}<div style="width:18px;"></div>${r.row2.map(mk).join('')}</div>`;
+  }).join('');
+
+  updateSeatSum();
+}
+
+function togSeat(n, taken) {
+  if (taken) return;
+  const total = state.aqty + state.cqty;
+  const idx = state.seats.indexOf(n);
+  if (idx > -1) state.seats.splice(idx, 1);
+  else {
+    if (state.seats.length >= total) { showAlert(STM.t('onlyN', lang, {n:total})); return; }
+    state.seats.push(n);
+  }
+  renderSeats();
+}
+
+function updateSeatSum() {
+  const total = state.aqty + state.cqty;
+  const pa = state.tour?.price_adult||300, pc = state.tour?.price_child||250;
+  const price = state.aqty*pa + state.cqty*pc;
+  const sum = document.getElementById('seat-sum');
+  const btn = document.getElementById('seats-next');
+  if (state.seats.length > 0) {
+    sum.style.display = 'flex';
+    document.getElementById('sum-seats').textContent = state.seats.slice().sort((a,b)=>a-b).join(', ');
+    document.getElementById('sum-total').textContent = price + ' ₾';
+  } else sum.style.display = 'none';
+  btn.disabled = state.seats.length !== total;
+  btn.style.opacity = state.seats.length === total ? '1' : '.5';
+
+  // Check if bus is full — notify
+  const totalSeats = 48;
+  const takenCount = document.querySelectorAll('.seat.taken').length;
+  if (takenCount >= totalSeats) {
+    // Notify admin via SMS-like flag
+    const buses = STM.getBuses();
+    const b = buses.find(b => b.id === state.bus?.id);
+    if (b && !b.fullNotified) {
+      b.fullNotified = true;
+      STM.saveBuses(buses);
+    }
+  }
+}
+
+// ── Step 5 → 6 ──
+function goStep6() {
+  if (state.seats.length !== state.aqty + state.cqty) return;
+  renderPaxForms();
+  setStep(6);
+}
+
+function renderPaxForms() {
+  const wrap = document.getElementById('pax-forms');
+  const all = [];
+  for (let i = 0; i < state.aqty; i++) all.push({ type:'a', label: STM.t('standard',lang) });
+  for (let i = 0; i < state.cqty; i++) all.push({ type:'c', label: STM.t('child',lang) });
+  const T = key => STM.t(key, lang);
+  wrap.innerHTML = all.map((p, i) => `
+    <div class="pb">
+      <div class="pb-title">${T('passenger')} ${i+1} — ${p.label} | ${lang==='ru'?'Место':lang==='en'?'Seat':'ადგილი'}: ${state.seats[i]||'?'}</div>
+      <div class="fr">
+        <div class="fg"><label class="fl">${T('firstName')}</label><input type="text" class="fi" id="p${i}-fn" placeholder="${T('firstName')}"></div>
+        <div class="fg"><label class="fl">${T('lastName')}</label><input type="text" class="fi" id="p${i}-ln" placeholder="${T('lastName')}"></div>
+      </div>
+      <div class="fr">
+        <div class="fg"><label class="fl">${T('passport')}</label><input type="text" class="fi" id="p${i}-pp" placeholder="${lang==='ru'?'AB1234567':lang==='en'?'AB1234567':'AB1234567'}"></div>
+        <div class="fg"><label class="fl">${T('phone')}</label><input type="text" class="fi" id="p${i}-ph" placeholder="+995 5XX XXX XXX"></div>
+      </div>
+    </div>`).join('');
+}
+
+// ── Step 6 → 7 ──
+function goStep7() {
+  const total = state.aqty + state.cqty;
+  const pax = [];
+  for (let i = 0; i < total; i++) {
+    const fn = document.getElementById(`p${i}-fn`).value.trim();
+    const ln = document.getElementById(`p${i}-ln`).value.trim();
+    const pp = document.getElementById(`p${i}-pp`).value.trim();
+    const ph = document.getElementById(`p${i}-ph`).value.trim();
+    if (!fn||!ln||!pp||!ph) { showAlert(STM.t('fillPassenger',lang,{n:i+1})); return; }
+    pax.push({ name:fn, surname:ln, passport:pp, phone:ph, seat:state.seats[i], type:i<state.aqty?'adult':'child' });
+  }
+  state.pax = pax;
+  state.total = state.aqty*(state.tour?.price_adult||300) + state.cqty*(state.tour?.price_child||250);
+  renderBookSummary();
+  setStep(7);
+}
+
+function renderBookSummary() {
+  const t = state.tour, T = key => STM.t(key, lang);
+  document.getElementById('book-summary').innerHTML = `
+    <div class="crow"><span class="ck">${T('selectTour')}</span><span class="cv">${t.name}</span></div>
+    <div class="crow"><span class="ck">${T('from')}</span><span class="cv">${t.from}</span></div>
+    <div class="crow"><span class="ck">${T('to')}</span><span class="cv">${t.to}</span></div>
+    <div class="crow"><span class="ck">${T('date')}</span><span class="cv">${state.date}</span></div>
+    <div class="crow"><span class="ck">${lang==='ru'?'Автобус':lang==='en'?'Bus':'ავტობუსი'}</span><span class="cv">${state.bus?.name||''}</span></div>
+    ${state.pax.map((p,i)=>`<div class="crow"><span class="ck">${T('passenger')} ${i+1}</span><span class="cv">${p.name} ${p.surname} | ${lang==='ru'?'Место':lang==='en'?'Seat':'ადგ.'} ${p.seat}</span></div>`).join('')}
+    <div class="crow" style="border-top:2px solid rgba(245,160,32,.4);margin-top:6px;padding-top:10px;">
+      <span class="ck" style="font-size:15px;">${T('total')}</span>
+      <span class="cv" style="font-size:18px;color:var(--red);">${state.total} ₾</span>
+    </div>`;
+  document.getElementById('conf-detail').innerHTML = `${t.name} | ${lang==='ru'?'Места':lang==='en'?'Seats':'ადგ.'}: ${state.seats.join(', ')} | ${state.total}₾`;
+}
+
+let _payMethod = 'keepz';
+function selPayMethod(m){ _payMethod = m; }
+function selPay(el) { document.querySelectorAll('.pm').forEach(m => m.classList.remove('sel')); el.classList.add('sel'); }
+function fmtCard(el) { let v=el.value.replace(/\D/g,'').slice(0,16); el.value=v.replace(/(.{4})/g,'$1 ').trim(); }
+function fmtExp(el) { let v=el.value.replace(/\D/g,''); if(v.length>=2)v=v.slice(0,2)+'/'+v.slice(2,4); el.value=v; }
+
+function showConfWarn() {
+  document.getElementById('pay-row').style.display = 'none';
+  document.getElementById('conf-warn').style.display = 'block';
+}
+function goBackSeats() {
+  document.getElementById('conf-warn').style.display = 'none';
+  document.getElementById('pay-row').style.display = 'flex';
+  setStep(5); renderSeats();
+}
+
+// ── Final Pay ──
+async function finalPay() {
+  const bookingCode = STM.genCode();
+  const keepzOrderId = crypto.randomUUID(); // Keepz-ს სჭირდება 36-ნიშნა UUID
+  state.code = bookingCode;
+  state.pendingCode = bookingCode;
+  state.keepzOrderId = keepzOrderId;
+
+  // If Keepz — redirect to payment page (don't book yet)
+  if (_payMethod === 'keepz') {
+    try {
+      // Store pending booking in sessionStorage
+      const pendingBooking = {
+        code: bookingCode,
+        keepzOrderId,
+        tourId: state.tour.id, tour: state.tour.name,
+        from: state.tour.from, to: state.tour.to, date: state.date,
+        busId: state.bus.id, busName: state.bus.name,
+        passengers: state.pax, seats: state.seats,
+        total: state.total, used: false, lang,
+        created: new Date().toISOString()
+      };
+      sessionStorage.setItem('stm_pending', JSON.stringify(pendingBooking));
+
+      // Check config first before any crypto call
+      if (!window.STM || !window.STM.keepzConfig || !window.STM.keepzConfig.rsaPublicKey || window.STM.keepzConfig.rsaPublicKey.length < 20) {
+        showAlert('⚙️ Keepz კონფიგი ვერ ჩაიტვირთა. data.js აუცილებლად უნდა იყოს ატვირთული და შევსებული.');
+        document.getElementById('conf-warn').style.display = 'none';
+        document.getElementById('pay-row').style.display = 'flex';
+        return;
+      }
+
+      const result = await STM.keepzCreateOrder(state.total, keepzOrderId);
+      const payUrl = result && (result.urlForQR || result.paymentUrl || result.redirectUrl || result.url);
+
+      if (payUrl) {
+        window.location.href = payUrl;
+        return;
+      } else {
+        showAlert('Keepz: გადახდის URL ვერ მოიძებნა. პასუხი: ' + JSON.stringify(result).slice(0,160));
+        document.getElementById('conf-warn').style.display = 'none';
+        document.getElementById('pay-row').style.display = 'flex';
+        return;
+      }
+    } catch(e) {
+      showAlert('Keepz შეცდომა: ' + (e.message||e));
+      document.getElementById('conf-warn').style.display = 'none';
+      document.getElementById('pay-row').style.display = 'flex';
+      return;
+    }
+  }
+
+  // Card / mobile — book immediately
+  doFinalBooking(bookingCode);
+}
+
+function doFinalBooking(code) {
+  const booking = {
+    code, tourId: state.tour.id, tour: state.tour.name,
+    from: state.tour.from, to: state.tour.to, date: state.date,
+    busId: state.bus.id, busName: state.bus.name,
+    passengers: state.pax, seats: state.seats,
+    total: state.total, used: false, lang,
+    created: new Date().toISOString()
+  };
+  STM.addBooking(booking);
+  STM.sendSMS(state.pax[0].phone, STM.smsText(booking, lang), code);
+
+  // Check if bus is full and notify admin
+  const tours = STM.getTours();
+  const t = tours.find(t => t.id === state.tour.id);
+  if (t) {
+    const takenCount = STM.getTakenSeats(state.tour.id, state.bus.id).length;
+    if (takenCount >= (t.seats_total || 48)) {
+      STM.sendSMS(ADMIN_PHONE, '⚠️ STM GEORGIA: ' + state.bus.name + ' სავსეა! ტური: ' + t.name, 'ADMIN');
+    }
+  }
+
+  renderFinalTicket(code);
+  setStep(8);
+}
+
+// ── Handle Keepz return ──
+function checkKeepzReturn() {
+  const params = new URLSearchParams(window.location.search);
+  const order = params.get('order');
+  const status = params.get('status');
+  if (!order || !status) return;
+
+  // Clean URL
+  window.history.replaceState({}, '', window.location.pathname);
+
+  const pending = sessionStorage.getItem('stm_pending');
+  if (!pending) return;
+  const booking = JSON.parse(pending);
+  sessionStorage.removeItem('stm_pending');
+
+  if (status === 'success') {
+    // Verify with Keepz API then book
+    STM.keepzCheckOrder(order || booking.keepzOrderId).then(result => {
+      if (result && (result.status === 'PAID' || result.status === 'SUCCESS' || result.status === 'COMPLETED')) {
+        STM.addBooking(booking);
+        STM.sendSMS(booking.passengers[0].phone, STM.smsText(booking, booking.lang||'ka'), booking.code);
+        // Show success
+        showAlert('✅ გადახდა წარმატებულია! ბილეთის კოდი: ' + booking.code, '🎉');
+        setTimeout(() => showTab('check'), 2500);
+      } else {
+        showAlert('⚠️ გადახდა ვერ დადასტურდა. სტატუსი: ' + (result?.status||'?'));
+      }
+    }).catch(() => {
+      // Can't verify - show manual check message
+      showAlert('გადახდა შესაძლოა წარმატებული იყოს. კოდი: ' + booking.code + '\nდაუკავშირდით ადმინს.');
+    });
+  } else if (status === 'cancel') {
+    showAlert('❌ გადახდა გაუქმდა. ადგილი არ დაჯავშნულა.');
+  }
+}
+
+function renderFinalTicket(code) {
+  const t = state.tour, p = state.pax[0], T = key => STM.t(key, lang);
+  document.getElementById('final-ticket').innerHTML = `
+    <div class="ticket">
+      <div class="tstripe"></div>
+      <div class="thead">
+        <div style="font-family:Montserrat;font-size:20px;font-weight:900;"><span style="color:#f5c842">S</span>TM BUS GEORGIA</div>
+        <div style="font-size:11px;opacity:.65;margin-top:3px;">${lang==='ru'?'Билет на автобус':lang==='en'?'Bus Ticket':'მგზავრობის ბილეთი'}</div>
+      </div>
+      <div class="tbody">
+        <div class="trow"><span class="tk">${T('selectTour')}</span><span class="tv">${t.name}</span></div>
+        <div class="trow"><span class="tk">${T('from')}</span><span class="tv">${t.from}</span></div>
+        <div class="trow"><span class="tk">${T('to')}</span><span class="tv">${t.to}</span></div>
+        <div class="trow"><span class="tk">${T('date')}</span><span class="tv">${state.date}</span></div>
+        <div class="trow"><span class="tk">${lang==='ru'?'Автобус':lang==='en'?'Bus':'ავტობუსი'}</span><span class="tv">${state.bus.name}</span></div>
+        <div class="trow"><span class="tk">${T('passenger')}</span><span class="tv">${p.name} ${p.surname}</span></div>
+        <div class="trow"><span class="tk">${T('seats')}</span><span class="tv">${state.seats.join(', ')}</span></div>
+        <div class="trow"><span class="tk">${T('total')}</span><span class="tv" style="color:var(--red);font-size:16px;">${state.total} ₾</span></div>
+        <div class="tcode">
+          <div class="tcode-num">${code}</div>
+          <div style="font-size:10px;color:var(--gray3);margin-top:3px;font-weight:700;">${T('showCode')}</div>
+        </div>
+      </div>
+      <div class="tstripe"></div>
+    </div>`;
+}
+
+function newBook() {
+  state = { step:1, date:null, tour:null, bus:null, aqty:0, cqty:0, seats:[], pax:[], total:0, code:null };
+  document.getElementById('travel-date').value = '';
+  document.getElementById('aqty').textContent = '0';
+  document.getElementById('cqty').textContent = '0';
+  document.getElementById('qty-total').textContent = '';
+  document.getElementById('conf-warn').style.display = 'none';
+  document.getElementById('pay-row').style.display = 'flex';
+  setStep(1);
+}
+
+// ── Tours list ──
+function renderToursList() {
+  const tours = STM.getTours().filter(t => t.active);
+  const wrap = document.getElementById('tours-list');
+  const T = key => STM.t(key, lang);
+  if (!tours.length) { wrap.innerHTML = `<div class="no-content"><div class="no-icon">🚌</div><div style="font-weight:700;">${lang==='ru'?'Туров нет':lang==='en'?'No tours':'ტური ჯერ არ არის'}</div></div>`; return; }
+  wrap.innerHTML = tours.map(t => `
+    <div class="ti-item">
+      <div>
+        <div class="tr">${t.name}</div>
+        <div class="ti-info">📍 ${t.from} → ${t.to}</div>
+        <div class="ti-info">⏱ ${t.duration||''} | 📅 ${t.dates.join(' / ')}</div>
+        ${t.desc?`<div class="ti-info" style="font-style:italic;">${t.desc}</div>`:''}
+      </div>
+      <div style="text-align:right;">
+        <div class="tp">${t.price_adult}₾ / ${t.price_child}₾</div>
+        <div class="ts">${t.seats_total-(t.seats_taken||[]).length} ${T('free')}</div>
+        <button class="btn btn-p" style="margin-top:8px;padding:9px 18px;font-size:12px;" onclick="bookFromTours(${t.id})">${lang==='ru'?'Забронировать':lang==='en'?'Book':'🎫 ჯავშანი'}</button>
+      </div>
+    </div>`).join('');
+}
+
+function bookFromTours(id) {
+  state.tour = STM.getTours().find(t => t.id === id);
+  if (state.tour) { document.getElementById('tt-std-p').textContent = state.tour.price_adult + '₾'; document.getElementById('tt-ch-p').textContent = state.tour.price_child + '₾'; }
+  showTab('tickets');
+  setStep(3);
+}
+
+// ── Check ticket ──
+function checkTkt() {
+  const code = document.getElementById('ck-code').value.trim().toUpperCase();
+  const surname = document.getElementById('ck-surname').value.trim().toLowerCase();
+  const res = document.getElementById('cres');
+  const b = STM.getBookings().find(b => b.code === code);
+  const T = key => STM.t(key, lang);
+  if (!b) { res.className='cres show err'; res.innerHTML=`<div style="color:var(--red);font-weight:800;">❌ ${T('notFound')}</div>`; return; }
+  if (surname && !b.passengers.some(p => p.surname.toLowerCase() === surname)) { res.className='cres show err'; res.innerHTML=`<div style="color:var(--red);font-weight:800;">❌ ${T('surnameNoMatch')}</div>`; return; }
+  res.className = 'cres show';
+  res.innerHTML = `
+    <div style="color:${b.used?'var(--amber)':'var(--green)'};font-weight:800;font-size:15px;margin-bottom:10px;">${b.used?'⚠️ '+T('used'):'✅ '+T('searchResult')}</div>
+    ${[{k:T('selectTour'),v:b.tour},{k:T('date'),v:b.date},{k:T('seats'),v:(b.seats||[]).join(', ')},{k:T('total'),v:b.total+'₾'}].map(r=>`<div style="font-size:13px;padding:5px 0;border-bottom:1px solid var(--gray2);"><strong>${r.k}:</strong> ${r.v}</div>`).join('')}
+    ${b.passengers.map(p=>`<div style="font-size:13px;padding:5px 0;border-bottom:1px solid var(--gray2);">${p.name} ${p.surname} | ${p.passport} | ${T('seats')}: ${p.seat}</div>`).join('')}`;
+}
+
+// Init
+document.getElementById('travel-date').min = new Date().toISOString().split('T')[0];
+setStep(1);
+checkGlobalAlert();
+checkKeepzReturn();
+STM.onSync(() => { checkGlobalAlert(); if(state.step===5) renderSeats(); if(state.step===4) renderBusOpts(); });
+setInterval(() => { if(state.step===5) renderSeats(); }, 5000);
+</script>
+</body>
+</html>
