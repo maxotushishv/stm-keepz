@@ -2,66 +2,59 @@
 <html lang="ka">
 <head>
 <meta charset="UTF-8">
-<title>მგზავრთა სია</title>
+<title>Passenger List</title>
 
 <script src="data.js"></script>
 
 <style>
+@page {
+  size: A4;
+  margin: 0;
+}
+
 body{
-  font-family: Arial;
   margin:0;
-  padding:20px;
+  padding:0;
 }
 
-.print{
-  width:100%;
+.page{
+  position:relative;
+  width:210mm;
+  height:297mm;
+
+  /* 👇 შენი სურათი აქ ჩასვი */
+  background:url('bekatour passanger list.jpg') no-repeat center;
+  background-size:100% 100%;
 }
 
-h2{
-  text-align:center;
-  margin-bottom:10px;
+/* ტექსტის სტილი */
+.txt{
+  position:absolute;
+  font-size:10px;
+  font-family:Arial;
 }
 
-table{
-  width:100%;
-  border-collapse:collapse;
-  font-size:12px;
+/* ცხრილის რიგები */
+.row{
+  position:absolute;
+  left:10mm;
+  width:190mm;
+  display:flex;
+  font-size:10px;
 }
 
-th, td{
-  border:1px solid #000;
-  padding:4px;
-  text-align:left;
-}
-
-th{
-  background:#eee;
-}
-
-@media print {
-  button{display:none;}
-}
+/* სვეტები (გრაფები) */
+.c1{ width:10mm; }   /* # */
+.c2{ width:50mm; }   /* სახელი */
+.c3{ width:35mm; }   /* პასპორტი */
+.c4{ width:55mm; }   /* ტური */
+.c5{ width:40mm; }   /* თანხა */
 </style>
 </head>
 
 <body>
 
-<button onclick="window.print()">🖨️ ბეჭდვა</button>
-
-<h2>მგზავრთა სია</h2>
-
-<table>
-<thead>
-<tr>
-  <th>#</th>
-  <th>სახელი გვარი</th>
-  <th>პასპორტი</th>
-  <th>ტური</th>
-</tr>
-</thead>
-
-<tbody id="tbl"></tbody>
-</table>
+<div class="page" id="page"></div>
 
 <script>
 const params = new URLSearchParams(location.search);
@@ -75,21 +68,36 @@ bookings.forEach(b=>{
     rows.push({
       name: p.name + " " + p.surname,
       passport: p.passport || p.pid || '',
-      tour: b.tour
+      tour: b.tour,
+      amount: b.total || ''
     });
   });
 });
 
-const tbody = document.getElementById("tbl");
+const page = document.getElementById("page");
 
-tbody.innerHTML = rows.map((r,i)=>`
-<tr>
-  <td>${i+1}</td>
-  <td>${r.name}</td>
-  <td>${r.passport}</td>
-  <td>${r.tour}</td>
-</tr>
-`).join('');
+/* 🔥 Y პოზიციის დაწყება (პირველი ხაზი) */
+let startY = 70; // mm — აქ ვასწორებთ
+
+rows.forEach((r,i)=>{
+  const row = document.createElement("div");
+  row.className = "row";
+
+  row.style.top = (startY + (i*5)) + "mm"; // ხაზებს შორის დაშორება
+
+  row.innerHTML = `
+    <div class="c1">${i+1}</div>
+    <div class="c2">${r.name}</div>
+    <div class="c3">${r.passport}</div>
+    <div class="c4">${r.tour}</div>
+    <div class="c5">${r.amount}</div>
+  `;
+
+  page.appendChild(row);
+});
+
+/* ავტომატური ბეჭდვა */
+window.onload = () => setTimeout(()=>window.print(),500);
 </script>
 
 </body>
