@@ -29,20 +29,34 @@ body{
   print-color-adjust: exact;
 }
 
-/* 👉 კიდე მარჯვნივ გავწიე */
+/* მთელი რიგი */
 .row{
   position:absolute;
-  left:23mm;
+  left:23mm; /* 👉 მარჯვნივ */
   width:175mm;
   display:flex;
   font-size:10px;
   font-family:Arial;
 }
 
-/* სვეტები */
+/* სახელი */
 .c2{ width:65mm; }
-.c3{ width:40mm; }
-.c4{ width:50mm; }
+
+/* პასპორტი */
+.c3{ 
+  width:40mm;
+  position:relative;
+  left:-2mm; /* 👉 უკან გაწევა */
+}
+
+/* ტური */
+.c4{ 
+  width:50mm;
+  position:relative;
+  top:1mm; /* 👉 დაბლა */
+}
+
+/* თანხა */
 .c5{ width:25mm; }
 
 </style>
@@ -54,7 +68,7 @@ body{
 
 <script>
 
-/* 🔴 ქართული → რუსული (რეალური, არა ინგლისური) */
+/* 🔴 ქართული → რუსული */
 function geoToRus(text){
   const map = {
     'ა':'а','ბ':'б','გ':'г','დ':'д','ე':'е','ვ':'в','ზ':'з','თ':'т',
@@ -62,11 +76,10 @@ function geoToRus(text){
     'რ':'р','ს':'с','ტ':'т','უ':'у','ფ':'ф','ქ':'к','ღ':'г','ყ':'к',
     'შ':'ш','ჩ':'ч','ც':'ц','ძ':'дз','წ':'ц','ჭ':'ч','ხ':'х','ჯ':'дж','ჰ':'х'
   };
-
   return text.split('').map(l => map[l] || l).join('');
 }
 
-/* tour id */
+/* TOUR */
 const params = new URLSearchParams(location.search);
 const tourId = Number(params.get("tourId"));
 
@@ -79,7 +92,7 @@ bookings.forEach(b=>{
     rows.push({
       name: geoToRus(p.name + " " + p.surname),
       passport: p.passport || p.pid || '',
-      tour: geoToRus(b.tour), // 🔥 ტური რუსულად
+      tour: geoToRus(b.tour),
       amount: b.total || ''
     });
   });
@@ -87,14 +100,17 @@ bookings.forEach(b=>{
 
 const page = document.getElementById("page");
 
-/* 👉 ცოტა კიდე მაღლა ავწიე */
-let startY = 65,5;
+/* 👉 საერთო პოზიცია */
+let startY = 65;
+
+/* 🔥 მთავარი FIX — ხაზები რომ არ გაიქცეს */
+const lineHeight = 5.2;
 
 rows.forEach((r,i)=>{
   const row = document.createElement("div");
   row.className = "row";
 
-  row.style.top = (startY + (i*5)) + "mm";
+  row.style.top = (startY + (i*lineHeight)) + "mm";
 
   row.innerHTML = `
     <div class="c2">${r.name}</div>
@@ -106,7 +122,6 @@ rows.forEach((r,i)=>{
   page.appendChild(row);
 });
 
-/* print */
 window.onload = () => {
   setTimeout(()=>window.print(), 500);
 };
