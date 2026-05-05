@@ -17,38 +17,35 @@ body{
   padding:0;
 }
 
+/* მთავარი ფურცელი */
 .page{
   position:relative;
   width:210mm;
   height:297mm;
 
-  /* 👇 შენი სურათი აქ ჩასვი */
   background:url('bekatour passanger list.jpg') no-repeat center;
   background-size:100% 100%;
+
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
 }
 
-/* ტექსტის სტილი */
-.txt{
+/* თითო ხაზის სტილი */
+.row{
   position:absolute;
+  left:15mm; /* 👉 მარჯვნივ გაწეული */
+  width:180mm;
+  display:flex;
   font-size:10px;
   font-family:Arial;
 }
 
-/* ცხრილის რიგები */
-.row{
-  position:absolute;
-  left:10mm;
-  width:190mm;
-  display:flex;
-  font-size:10px;
-}
+/* სვეტები */
+.c2{ width:60mm; }   /* სახელი */
+.c3{ width:40mm; }   /* პასპორტი */
+.c4{ width:60mm; }   /* ტური */
+.c5{ width:30mm; }   /* თანხა */
 
-/* სვეტები (გრაფები) */
-.c1{ width:10mm; }   /* # */
-.c2{ width:50mm; }   /* სახელი */
-.c3{ width:35mm; }   /* პასპორტი */
-.c4{ width:55mm; }   /* ტური */
-.c5{ width:40mm; }   /* თანხა */
 </style>
 </head>
 
@@ -57,16 +54,31 @@ body{
 <div class="page" id="page"></div>
 
 <script>
+
+/* 🔤 ქართული → "რუსული/ლათინური" ტრანსლიტი */
+function geoToRus(text){
+  const map = {
+    'ა':'a','ბ':'b','გ':'g','დ':'d','ე':'e','ვ':'v','ზ':'z','თ':'t',
+    'ი':'i','კ':'k','ლ':'l','მ':'m','ნ':'n','ო':'o','პ':'p','ჟ':'zh',
+    'რ':'r','ს':'s','ტ':'t','უ':'u','ფ':'f','ქ':'k','ღ':'g','ყ':'q',
+    'შ':'sh','ჩ':'ch','ც':'ts','ძ':'dz','წ':'ts','ჭ':'ch','ხ':'kh','ჯ':'j','ჰ':'h'
+  };
+  return text.split('').map(l => map[l] || l).join('');
+}
+
+/* tour id */
 const params = new URLSearchParams(location.search);
 const tourId = Number(params.get("tourId"));
 
+/* მონაცემები */
 const bookings = STM.getBookings().filter(b => b.tourId === tourId);
 
 let rows = [];
+
 bookings.forEach(b=>{
   b.passengers.forEach(p=>{
     rows.push({
-      name: p.name + " " + p.surname,
+      name: geoToRus(p.name + " " + p.surname),
       passport: p.passport || p.pid || '',
       tour: b.tour,
       amount: b.total || ''
@@ -76,17 +88,17 @@ bookings.forEach(b=>{
 
 const page = document.getElementById("page");
 
-/* 🔥 Y პოზიციის დაწყება (პირველი ხაზი) */
-let startY = 70; // mm — აქ ვასწორებთ
+/* 🔥 პოზიცია (მაღლა აწეული) */
+let startY = 65;
 
+/* ჩაწერა */
 rows.forEach((r,i)=>{
   const row = document.createElement("div");
   row.className = "row";
 
-  row.style.top = (startY + (i*5)) + "mm"; // ხაზებს შორის დაშორება
+  row.style.top = (startY + (i*5)) + "mm";
 
   row.innerHTML = `
-    <div class="c1">${i+1}</div>
     <div class="c2">${r.name}</div>
     <div class="c3">${r.passport}</div>
     <div class="c4">${r.tour}</div>
@@ -97,7 +109,10 @@ rows.forEach((r,i)=>{
 });
 
 /* ავტომატური ბეჭდვა */
-window.onload = () => setTimeout(()=>window.print(),500);
+window.onload = () => {
+  setTimeout(()=>window.print(), 500);
+};
+
 </script>
 
 </body>
