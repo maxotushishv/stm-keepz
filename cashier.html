@@ -1,0 +1,1128 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>STM Georgia — სალარო</title>
+<script src="js/bxlcommon.js"></script>
+<script src="js/bxlpos.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Georgian:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--blue:#1a5fa8;--bd:#0e3d72;--green:#1D9E75;--red:#cc2020;--amber:#f5a020;--bg:#f0f4fa;--card:#fff;--bor:#dde3ee;--t:#1a2236;--t2:#5a6a8a;--t3:#9aa8c0;}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'Noto Sans Georgian',sans-serif;background:var(--bg);color:var(--t);font-size:19px;font-weight:600;}
+header{background:linear-gradient(90deg,var(--bd),var(--blue) 55%,#1D9E75);padding:0 28px;height:68px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 3px 16px rgba(0,0,0,.22);}
+.hl{font-family:'Noto Sans Georgian',sans-serif;font-size:24px;font-weight:900;color:#fff;}
+.hl span{color:#f5c842;}
+.layout{display:flex;min-height:calc(100vh - 68px);}
+.sidebar{width:220px;background:#fff;border-right:3px solid var(--bor);padding:14px;flex-shrink:0;display:flex;flex-direction:column;gap:8px;overflow-y:auto;}
+.main{flex:1;padding:22px;overflow-y:auto;}
+.scroll-cont{max-width:920px;}
+
+/* SIDEBAR NAV */
+.snav-btn{width:100%;padding:13px 14px;border-radius:11px;border:2.5px solid var(--bor);background:#f8faff;color:var(--t);font-size:16px;font-weight:800;cursor:pointer;text-align:left;display:flex;align-items:center;gap:9px;transition:all .2s;font-family:'Noto Sans Georgian',sans-serif;}
+.snav-btn:hover{background:#e8f0fb;border-color:var(--blue);}
+.snav-btn.on{background:var(--blue);color:#fff;border-color:var(--bd);}
+
+/* CASH STATUS BOX */
+.cash-status-box{border-radius:13px;border:3px solid;padding:16px;transition:all .3s;}
+.cash-status-box.open{border-color:var(--green);background:linear-gradient(135deg,#d6f5e8,#f0fff8);}
+.cash-status-box.closed{border-color:var(--red);background:linear-gradient(135deg,#fde8e8,#fff4f4);}
+.cash-user{font-size:14px;font-weight:700;color:var(--t2);margin-bottom:4px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.cash-stat-label{font-size:20px;font-weight:900;margin-bottom:12px;}
+.cash-stat-label.open{color:var(--green);}
+.cash-stat-label.closed{color:var(--red);}
+.cash-btns{display:flex;gap:6px;}
+.cash-btn{flex:1;padding:9px 6px;border-radius:9px;border:none;font-size:13px;font-weight:800;cursor:pointer;font-family:'Noto Sans Georgian',sans-serif;transition:all .2s;}
+.cash-btn-plus{background:var(--green);color:#fff;}
+.cash-btn-plus:hover{background:#0e7055;}
+.cash-btn-minus{background:var(--red);color:#fff;}
+.cash-btn-minus:hover{background:#990000;}
+
+/* PRINTER BAR */
+.pbar{display:flex;align-items:center;gap:8px;padding:9px 12px;background:#f4f7ff;border:2px solid var(--bor);border-radius:9px;font-size:14px;}
+.pdot{width:10px;height:10px;border-radius:50%;background:#ccc;flex-shrink:0;}
+.pdot.ok{background:var(--green);}.pdot.err{background:var(--red);}
+
+/* FORM */
+.stitle{font-size:22px;font-weight:900;color:var(--blue);margin-bottom:16px;padding-bottom:10px;border-bottom:3px solid var(--bor);}
+.fl{font-size:15px;font-weight:700;color:var(--t2);margin-bottom:5px;display:block;}
+.fi{width:100%;padding:13px 15px;border:2.5px solid var(--bor);border-radius:10px;font-size:17px;font-family:'Noto Sans Georgian',sans-serif;color:var(--t);background:#fff;outline:none;transition:border-color .2s;margin-bottom:13px;}
+.fi:focus{border-color:var(--blue);}
+select.fi{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='9'%3E%3Cpath d='M1 1l6 6 6-6' stroke='%235a6a8a' fill='none' stroke-width='2.5' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:38px;}
+
+/* QTY */
+.qblock{background:#f4f7ff;border-radius:12px;padding:13px 17px;margin-bottom:13px;display:flex;align-items:center;justify-content:space-between;}
+.qlbl{font-size:17px;font-weight:700;}
+.qprice{font-size:14px;color:var(--t2);}
+.qctrl{display:flex;align-items:center;gap:12px;}
+.qb{width:40px;height:40px;border-radius:50%;border:2.5px solid var(--blue);background:#fff;color:var(--blue);font-size:22px;font-weight:900;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;}
+.qb:hover{background:var(--blue);color:#fff;}
+.qn{font-size:22px;font-weight:900;min-width:26px;text-align:center;}
+
+/* PAX */
+.pb{background:#f8faff;border:2px solid #d0d9f0;border-radius:12px;padding:16px;margin-bottom:13px;}
+.pt{font-size:17px;font-weight:800;color:var(--blue);margin-bottom:11px;}
+.fg2{display:grid;grid-template-columns:1fr 1fr;gap:11px;}
+
+/* SEAT SMALL */
+.ssec{background:#f8faff;border:2px solid #d0d9f0;border-radius:12px;padding:15px;margin-bottom:13px;}
+.smw{overflow-x:auto;}
+.bus-wrap{border:3px solid #c0cfe0;border-radius:22px 12px 12px 22px;background:#fff;padding:13px;position:relative;display:inline-block;min-width:460px;}
+.bus-f{position:absolute;left:-18px;top:50%;transform:translateY(-50%);width:18px;height:60px;background:#c0cfe0;border-radius:8px 0 0 8px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;}
+.bwi{width:8px;height:8px;border-radius:50%;background:#8090a8;}
+.srow{display:flex;gap:4px;margin-bottom:4px;}
+.seat{width:28px;height:28px;border-radius:5px 5px 3px 3px;border:2px solid #7aabdb;background:#b8d4f0;color:#1a5fa8;font-size:9px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;font-family:monospace;}
+.seat:hover:not(.taken){background:#fde68a;border-color:#c8950a;transform:scale(1.1);}
+.seat.sel{background:#f5c842;border-color:#c8950a;color:#7c5000;}
+.seat.taken{background:#e57373;border-color:#c62828;color:#fff;cursor:not-allowed;}
+.leg{display:flex;gap:12px;margin-top:9px;font-size:13px;flex-wrap:wrap;}
+.li{display:flex;align-items:center;gap:5px;}
+.ld{width:13px;height:13px;border-radius:3px;border:2px solid;}
+.ld.f{background:#b8d4f0;border-color:#7aabdb;}.ld.s{background:#f5c842;border-color:#c8950a;}.ld.t{background:#e57373;border-color:#c62828;}
+
+/* SUMMARY */
+.scard{background:linear-gradient(135deg,#e8f0fb,#f0f7ff);border:2.5px solid var(--blue);border-radius:14px;padding:17px;margin-bottom:13px;}
+.sr{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid rgba(26,95,168,.15);font-size:16px;}
+.sr:last-child{border-bottom:none;}
+.sk{color:var(--t2);}.sv{font-weight:800;}
+.sr.tot{border-top:2.5px solid rgba(26,95,168,.3);margin-top:5px;padding-top:9px;}
+.sr.tot .sk{font-size:18px;font-weight:800;color:var(--t);}
+.sr.tot .sv{font-size:25px;color:var(--green);}
+
+/* BUTTONS */
+.btn{padding:12px 24px;border-radius:11px;font-size:17px;font-weight:800;font-family:'Noto Sans Georgian',sans-serif;cursor:pointer;border:none;display:inline-flex;align-items:center;gap:8px;transition:all .2s;}
+.btn-p{background:var(--blue);color:#fff;box-shadow:0 4px 14px rgba(26,95,168,.28);}
+.btn-p:hover{background:var(--bd);transform:translateY(-2px);}
+.btn-g{background:var(--green);color:#fff;box-shadow:0 4px 14px rgba(29,158,117,.28);}
+.btn-g:hover{background:#0e7055;transform:translateY(-2px);}
+.btn-gh{background:#fff;color:var(--blue);border:2.5px solid var(--blue);}
+.btn-gh:hover{background:#e8f0fb;}
+.btn-r{background:var(--red);color:#fff;}
+.btn-r:hover{background:#990000;}
+.btn-full{width:100%;justify-content:center;padding:15px;}
+
+/* ALERTS */
+.alert{padding:11px 14px;border-radius:9px;font-size:16px;font-weight:700;margin-bottom:11px;}
+.al-s{background:#e0f5ec;border:2px solid var(--green);color:#0e7055;}
+.al-e{background:#fde8e8;border:2px solid var(--red);color:#990000;}
+
+/* MODALS */
+.ov{display:none;position:fixed;inset:0;background:rgba(0,0,0,.56);z-index:9999;align-items:center;justify-content:center;padding:16px;}
+.ov.show{display:flex;}
+.mbox{background:#fff;border-radius:18px;padding:28px;max-width:430px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.25);}
+.mbox.wide{max-width:560px;text-align:left;}
+.mbox.xlwide{max-width:680px;text-align:left;}
+.mt{font-size:21px;font-weight:900;color:var(--t);margin-bottom:8px;}
+.ms{font-size:15px;color:var(--t2);margin-bottom:20px;}
+.mbtns{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;}
+
+/* RECEIPT */
+.rp{background:#fff;border-radius:10px;box-shadow:0 4px 18px rgba(0,0,0,.12);padding:20px;max-width:400px;font-family:'Courier New',monospace;font-size:13px;}
+.rp-center{text-align:center;}.rp-big{font-size:18px;font-weight:bold;}.rp-line{border-top:1px dashed #999;margin:8px 0;}
+.rp-row{display:flex;justify-content:space-between;margin:3px 0;font-size:12px;}.rp-code{text-align:center;font-size:20px;font-weight:bold;letter-spacing:4px;margin:8px 0;padding:8px;border:2px solid #000;}
+
+/* PLACEHOLDER */
+.ph{text-align:center;padding:60px 20px;color:var(--t3);}
+.ph-icon{font-size:64px;margin-bottom:14px;}
+
+/* PAYMENT TYPES */
+.pay-types{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-bottom:14px;}
+.pay-type-btn{padding:13px;border-radius:11px;border:2.5px solid var(--bor);background:#f8faff;cursor:pointer;font-size:15px;font-weight:800;text-align:center;transition:all .2s;font-family:'Noto Sans Georgian',sans-serif;}
+.pay-type-btn:hover{border-color:var(--blue);background:#e8f0fb;}
+.pay-type-btn.on{border-color:var(--blue);background:var(--blue);color:#fff;}
+.currency-box{background:#f4f7ff;border-radius:12px;padding:13px;margin-bottom:11px;border:2px solid var(--bor);}
+.currency-row{display:flex;align-items:center;gap:10px;margin-bottom:9px;}
+.currency-label{font-size:14px;font-weight:700;min-width:68px;}
+.currency-input{flex:1;padding:9px 13px;border:2.5px solid var(--bor);border-radius:8px;font-size:16px;font-weight:700;font-family:'Noto Sans Georgian',sans-serif;outline:none;}
+.currency-input:focus{border-color:var(--blue);}
+
+/* BIG BUS SEAT MAP */
+.bus-booking-wrap{background:#f8faff;border:2px solid #d0d9f0;border-radius:14px;padding:16px;margin-bottom:14px;}
+.bus-big-wrap{border:4px solid #c0cfe0;border-radius:28px 14px 14px 28px;background:#fff;padding:18px;position:relative;display:inline-block;}
+.bus-big-front{position:absolute;left:-22px;top:50%;transform:translateY(-50%);width:22px;height:76px;background:#c0cfe0;border-radius:10px 0 0 10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;}
+.srow-big{display:flex;gap:6px;margin-bottom:6px;}
+.seat-big{width:46px;height:46px;border-radius:9px 9px 5px 5px;border:2.5px solid #7aabdb;background:#b8d4f0;color:#1a5fa8;font-size:13px;font-weight:800;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;font-family:monospace;}
+.seat-big:hover{background:#fde68a;border-color:#c8950a;transform:scale(1.08);}
+.seat-big.booked-big{background:#e57373;border-color:#c62828;color:#fff;}
+.seat-big.booked-big:hover{background:#c0392b;border-color:#900;}
+
+/* REPORTS */
+.rep-table{width:100%;border-collapse:collapse;font-size:14px;}
+.rep-table th{background:var(--blue);color:#fff;padding:10px 11px;text-align:left;font-size:13px;}
+.rep-table td{padding:9px 11px;border-bottom:1px solid var(--bor);}
+.rep-table tr:hover td{background:#f4f7ff;}
+.badge{display:inline-block;padding:3px 9px;border-radius:6px;font-size:12px;font-weight:700;}
+.badge-g{background:#e0f5ec;color:#0e7055;}
+.badge-r{background:#fde8e8;color:#990000;}
+.badge-b{background:#e8f0fb;color:var(--blue);}
+.badge-a{background:#fff5e0;color:#b37000;}
+
+.keepz-overlay{display:none;position:fixed;inset:0;background:rgba(14,61,114,.92);z-index:9999;align-items:center;justify-content:center;flex-direction:column;gap:20px;}
+.keepz-overlay.show{display:flex;}
+.keepz-spin{width:64px;height:64px;border-radius:50%;border:6px solid rgba(255,255,255,.25);border-top-color:#fff;animation:spin 1s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+.keepz-msg{color:#fff;font-size:20px;font-weight:700;text-align:center;}
+.keepz-cancel{margin-top:10px;padding:12px 28px;border-radius:10px;border:2px solid rgba(255,255,255,.5);background:transparent;color:#fff;font-size:17px;font-weight:700;cursor:pointer;}
+</style>
+</head>
+<body>
+
+<!-- KEEPZ OVERLAY -->
+<div class="keepz-overlay" id="keepzOv">
+  <div class="keepz-spin"></div>
+  <div class="keepz-msg" id="keepzMsg">გადახდა მიმდინარეობს...<br>გადამისამართება Keepz-ზე</div>
+  <button class="keepz-cancel" onclick="cancelKeeyz()">გაუქმება ✕</button>
+</div>
+
+<!-- LANG MODAL -->
+<div class="ov" id="langOv">
+  <div class="mbox">
+    <div class="mt">ბეჭდვის ენა</div>
+    <div class="ms">Choose language / Выберите язык</div>
+    <div class="mbtns">
+      <button class="btn btn-p" onclick="doPrint('ka')">🇬🇪 ქართული</button>
+      <button class="btn btn-g" onclick="doPrint('en')">🇬🇧 English</button>
+      <button class="btn btn-r" onclick="doPrint('ru')">🇷🇺 Русский</button>
+    </div>
+    <button class="btn btn-gh" style="margin-top:13px;width:100%;" onclick="closeLang()">გაუქმება</button>
+  </div>
+</div>
+
+<!-- CASH OPEN MODAL -->
+<div class="ov" id="cashOpenOv">
+  <div class="mbox wide">
+    <div class="mt">💰 გამაგრება — სალაროს გახსნა</div>
+    <div class="ms">შეიყვანეთ ოდენობა (ოპერატორის თანხა)</div>
+    <label class="fl">თანხა (₾)</label>
+    <input type="number" class="fi" id="cashOpenAmt" placeholder="0.00" style="font-size:26px;font-weight:900;text-align:center;" min="0">
+    <div class="mbtns" style="margin-top:8px;">
+      <button class="btn btn-g" onclick="confirmCashOpen()">✓ დადასტურება</button>
+      <button class="btn btn-gh" onclick="closeCashOpen()">✕ გაუქმება</button>
+    </div>
+  </div>
+</div>
+
+<!-- CASH CLOSE MODAL -->
+<div class="ov" id="cashCloseOv">
+  <div class="mbox wide">
+    <div class="mt">🔒 ინკასაცია — სალაროს დახურვა</div>
+    <div class="ms" id="cashCloseInfo">სალარო დაიხურება</div>
+    <div class="mbtns">
+      <button class="btn btn-r" onclick="confirmCashClose()">✓ ინკასაცია</button>
+      <button class="btn btn-gh" onclick="closeCashClose()">✕ გაუქმება</button>
+    </div>
+  </div>
+</div>
+
+<!-- SEAT DETAIL MODAL (booking page) -->
+<div class="ov" id="seatDetailOv">
+  <div class="mbox wide">
+    <div class="mt" id="seatDetailTitle">ადგილი #0</div>
+    <div id="seatDetailInfo" style="font-size:15px;color:var(--t2);margin-bottom:14px;"></div>
+    <div style="margin-bottom:14px;">
+      <label class="fl">აღწერა (სურვილისამებრ)</label>
+      <textarea class="fi" id="seatDetailNote" rows="3" placeholder="შენიშვნა..."></textarea>
+    </div>
+    <div class="mbtns">
+      <button class="btn btn-g" id="seatDetailBook" onclick="confirmSeatBook()">📌 დაბრონვა</button>
+      <button class="btn btn-gh" onclick="closeSeatDetail()">✕ გაუქმება</button>
+      <button class="btn btn-r" id="seatDetailDel" style="display:none;" onclick="confirmSeatDelete()">🗑 წაშლა</button>
+    </div>
+  </div>
+</div>
+
+<!-- EDIT BOOKING MODAL -->
+<div class="ov" id="editBookOv">
+  <div class="mbox xlwide">
+    <div class="mt">✏️ ბილეთის რედაქტირება</div>
+    <div id="editBookContent" style="max-height:70vh;overflow-y:auto;"></div>
+    <div class="mbtns" style="margin-top:13px;">
+      <button class="btn btn-g" onclick="saveEditBook()">✓ შენახვა</button>
+      <button class="btn btn-gh" onclick="closeEditBook()">✕ გაუქმება</button>
+    </div>
+  </div>
+</div>
+
+<!-- PAYMENT MODAL -->
+<div class="ov" id="payOv">
+  <div class="mbox wide">
+    <div class="mt">💳 გადახდა</div>
+    <div id="payTotal" style="font-size:28px;font-weight:900;color:var(--green);text-align:center;margin-bottom:15px;"></div>
+    <div class="pay-types">
+      <button class="pay-type-btn" onclick="selPay('cash')" id="pt-cash">💵 ნაღდი</button>
+      <button class="pay-type-btn" onclick="selPay('transfer')" id="pt-transfer">🏦 გადარიცხვა</button>
+      <button class="pay-type-btn" onclick="selPay('onspot')" id="pt-onspot">🎫 ადგილზე</button>
+      <button class="pay-type-btn" onclick="selPay('diplomat')" id="pt-diplomat">👔 დიპლომატი</button>
+    </div>
+    <div id="cashCurrencyBox" style="display:none;">
+      <div class="currency-box">
+        <div style="font-size:15px;font-weight:800;margin-bottom:9px;color:var(--blue);">კუპიურები / მიღებული თანხა</div>
+        <div class="currency-row">
+          <span class="currency-label">🇬🇪 ₾ ლარი</span>
+          <input type="number" class="currency-input" id="cur-gel" placeholder="0" min="0" oninput="calcChange()">
+        </div>
+        <div class="currency-row">
+          <span class="currency-label">🇷🇺 ₽ რუბ.</span>
+          <input type="number" class="currency-input" id="cur-rub" placeholder="0" min="0" oninput="calcChange()">
+        </div>
+        <div class="currency-row">
+          <span class="currency-label">🇺🇸 $ დოლ.</span>
+          <input type="number" class="currency-input" id="cur-usd" placeholder="0" min="0" oninput="calcChange()">
+        </div>
+        <div id="changeInfo" style="margin-top:7px;font-size:15px;font-weight:700;"></div>
+      </div>
+    </div>
+    <div id="payAlert" style="margin-bottom:7px;"></div>
+    <div class="mbtns">
+      <button class="btn btn-g" onclick="confirmPay()">✓ დადასტურება + ბეჭდვა</button>
+      <button class="btn btn-gh" onclick="closePayModal()">✕ გაუქმება</button>
+    </div>
+  </div>
+</div>
+
+<header>
+  <div class="hl"><span>S</span>TM GEORGIA — სალარო</div>
+  <div style="display:flex;align-items:center;gap:8px;">
+    <div style="font-size:13px;font-weight:700;color:rgba(255,255,255,0.7);background:rgba(255,255,255,0.1);padding:5px 12px;border-radius:7px;" id="cashier-user">-</div>
+    <button onclick="STM.logout()" style="padding:7px 14px;border-radius:9px;border:2px solid rgba(255,255,255,.35);background:transparent;color:rgba(255,255,255,.9);font-size:13px;font-weight:700;cursor:pointer;font-family:'Noto Sans Georgian',sans-serif;">გასვლა ⏻</button>
+  </div>
+</header>
+
+<div class="layout">
+  <!-- ══ SIDEBAR ══ -->
+  <div class="sidebar">
+    <!-- CASH STATUS -->
+    <div class="cash-status-box closed" id="cashStatusBox">
+      <div class="cash-user" id="cashUserName">-</div>
+      <div class="cash-stat-label closed" id="cashStatLabel">🔴 დახურული</div>
+      <div class="cash-btns">
+        <button class="cash-btn cash-btn-plus" onclick="openCashOpen()">+ გამაგ.</button>
+        <button class="cash-btn cash-btn-minus" onclick="openCashClose()">− ინკ.</button>
+      </div>
+    </div>
+
+    <!-- PRINTER -->
+    <div class="pbar">
+      <div class="pdot" id="pdot"></div>
+      <input id="pname" value="Printer1" style="border:none;outline:none;background:transparent;font-size:12px;font-weight:700;color:var(--t);flex:1;min-width:0;" placeholder="პრინტერი">
+      <button onclick="testPrinter()" style="padding:4px 7px;border-radius:6px;border:1.5px solid var(--bor);background:#fff;cursor:pointer;font-size:12px;">🔌</button>
+    </div>
+
+    <!-- NAV BUTTONS -->
+    <button class="snav-btn on" id="snav-sell" onclick="setMode('sell')">🎫 ბილეთი</button>
+    <button class="snav-btn" id="snav-lk" onclick="setMode('lk')">🔍 ძიება</button>
+    <button class="snav-btn" id="snav-booking" onclick="setMode('booking')">🚌 დაბრონვა</button>
+    <button class="snav-btn" id="snav-reports" onclick="setMode('reports')">📊 რეპორტები</button>
+  </div>
+
+  <!-- ══ MAIN ══ -->
+  <div class="main">
+
+    <!-- ── SELL MODE ── -->
+    <div id="m-sell" class="scroll-cont">
+      <div class="stitle">🎫 ბილეთის გაყიდვა</div>
+      <div id="salert"></div>
+
+      <label class="fl">ტური *</label>
+      <select class="fi" id="f-tour" onchange="onTourChange()">
+        <option value="">— აირჩიეთ ტური —</option>
+      </select>
+
+      <label class="fl">ავტობუსი *</label>
+      <select class="fi" id="f-bus" onchange="refreshSeats()">
+        <option value="1">🚌 ავტობუსი 1</option>
+        <option value="2">🚌 ავტობუსი 2</option>
+      </select>
+
+      <label class="fl">თარიღი *</label>
+      <select class="fi" id="f-date"><option value="">— ჯერ ტური —</option></select>
+
+      <div class="qblock">
+        <div><div class="qlbl">🪑 სტანდ.</div><div class="qprice" id="qa-p">300 ₾</div></div>
+        <div class="qctrl"><button class="qb" onclick="chQ('a',-1)">−</button><span class="qn" id="qa">0</span><button class="qb" onclick="chQ('a',1)">+</button></div>
+      </div>
+      <div class="qblock">
+        <div><div class="qlbl">👶 ბავშვი</div><div class="qprice" id="qc-p">250 ₾</div></div>
+        <div class="qctrl"><button class="qb" onclick="chQ('c',-1)">−</button><span class="qn" id="qc">0</span><button class="qb" onclick="chQ('c',1)">+</button></div>
+      </div>
+
+      <div id="pax-forms"></div>
+
+      <div class="ssec" id="ssec" style="display:none">
+        <div style="font-size:17px;font-weight:800;margin-bottom:11px;">💺 ადგილის არჩევა</div>
+        <div style="font-size:14px;font-weight:700;color:var(--blue);margin-bottom:9px;" id="sinfo"></div>
+        <div class="smw">
+          <div class="bus-wrap">
+            <div class="bus-f"><div class="bwi"></div><div style="font-size:7px;color:#607088;text-align:center;">🚌</div><div class="bwi"></div></div>
+            <div id="sgrid"></div>
+          </div>
+        </div>
+        <div class="leg">
+          <div class="li"><div class="ld f"></div>თავ.</div>
+          <div class="li"><div class="ld s"></div>არჩ.</div>
+          <div class="li"><div class="ld t"></div>დაჯ.</div>
+        </div>
+      </div>
+
+      <div class="scard" id="sumcard" style="display:none">
+        <div id="sumcont"></div>
+        <div style="display:flex;gap:10px;margin-top:13px;flex-wrap:wrap;">
+          <button class="btn btn-g btn-full" onclick="openPayModal()">💳 გაყიდვა + გადახდა</button>
+          <button class="btn btn-gh" style="flex:1;" onclick="resetAll()">↺ გასუფ.</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ── LOOKUP MODE ── -->
+    <div id="m-lk" style="display:none" class="scroll-cont">
+      <div class="stitle">🔍 ბილეთის ძიება</div>
+      <label class="fl">ბილეთის კოდი</label>
+      <input type="text" class="fi" id="lk-code" placeholder="STM-XXXX" style="text-transform:uppercase;letter-spacing:3px;font-size:22px;font-weight:900;" oninput="this.value=this.value.toUpperCase()">
+      <button class="btn btn-p btn-full" onclick="lookupTkt()">🔍 ძიება + ბეჭდვა</button>
+      <div id="lkalert" style="margin-top:11px;"></div>
+    </div>
+
+    <!-- ── BOOKING MODE ── -->
+    <div id="m-booking" style="display:none" class="scroll-cont">
+      <div class="stitle">🚌 დაბრონვა — ადგილების მართვა</div>
+      <div style="display:flex;gap:11px;margin-bottom:15px;flex-wrap:wrap;">
+        <div style="flex:2;min-width:180px;">
+          <label class="fl">ტური</label>
+          <select class="fi" id="bk-tour" onchange="onBkTourChange()" style="margin-bottom:0;">
+            <option value="">— ტური —</option>
+          </select>
+        </div>
+        <div style="flex:1;min-width:140px;">
+          <label class="fl">თარიღი</label>
+          <select class="fi" id="bk-date" onchange="renderBkBus()" style="margin-bottom:0;">
+            <option value="">— თარიღი —</option>
+          </select>
+        </div>
+        <div style="flex:1;min-width:130px;">
+          <label class="fl">ავტობუსი</label>
+          <select class="fi" id="bk-bus" onchange="renderBkBus()" style="margin-bottom:0;">
+            <option value="1">🚌 ავტ. 1</option>
+            <option value="2">🚌 ავტ. 2</option>
+          </select>
+        </div>
+      </div>
+      <div id="bk-bus-area">
+        <div class="ph"><div class="ph-icon">🚌</div><div style="font-size:17px;font-weight:700;color:var(--t2);">აირჩიეთ ტური და თარიღი</div></div>
+      </div>
+    </div>
+
+    <!-- ── REPORTS MODE ── -->
+    <div id="m-reports" style="display:none" class="scroll-cont">
+      <div class="stitle">📊 რეპორტები — გაყიდული ბილეთები</div>
+      <div style="display:flex;gap:9px;margin-bottom:14px;flex-wrap:wrap;align-items:flex-end;">
+        <div>
+          <label class="fl">თარიღიდან</label>
+          <input type="date" class="fi" id="rep-from" style="margin-bottom:0;padding:9px 13px;font-size:14px;">
+        </div>
+        <div>
+          <label class="fl">თარიღამდე</label>
+          <input type="date" class="fi" id="rep-to" style="margin-bottom:0;padding:9px 13px;font-size:14px;">
+        </div>
+        <div style="flex:1;min-width:150px;">
+          <label class="fl">ტური</label>
+          <select class="fi" id="rep-tour" style="margin-bottom:0;padding:9px 13px;font-size:14px;">
+            <option value="">— ყველა —</option>
+          </select>
+        </div>
+        <div>
+          <label class="fl">კოდი</label>
+          <input type="text" class="fi" id="rep-code" placeholder="STM-..." style="margin-bottom:0;padding:9px 13px;font-size:14px;text-transform:uppercase;letter-spacing:2px;" oninput="this.value=this.value.toUpperCase();renderReports()">
+        </div>
+        <button class="btn btn-p" style="padding:9px 16px;font-size:14px;" onclick="renderReports()">🔍 ძიება</button>
+        <button class="btn btn-gh" style="padding:9px 14px;font-size:14px;" onclick="clearRepFilters()">↺</button>
+      </div>
+      <div id="rep-stats" style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;"></div>
+      <div id="rep-table-wrap" style="overflow-x:auto;"></div>
+    </div>
+
+    <!-- ── RECEIPT PREVIEW ── -->
+    <div id="rzone" style="display:none;margin-top:15px;">
+      <div style="display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap;">
+        <button class="btn btn-p" onclick="openLang()">🖨️ Bixolon / ბეჭდვა</button>
+        <button class="btn btn-gh" onclick="hideR()">✕ დახურვა</button>
+      </div>
+      <div class="rp" id="rp"></div>
+    </div>
+
+  </div><!-- /main -->
+</div><!-- /layout -->
+
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<script src="data.js"></script>
+<script src="print.js"></script>
+<script>
+// ═══════════════════════════════════
+// STATE
+// ═══════════════════════════════════
+var qa=0, qc=0, selSeats=[], curBooking=null, mode='sell';
+var cashStatus={open:false,openAmt:0,openTime:null};
+var selectedPayType='cash';
+var pendingSaleData=null;
+var bkSelectedSeat=null, bkSelectedSeatBooked=false;
+
+var LAYOUT=[
+  {row:[4,8,12,16,20],row2:[28,32,36,40,44,48]},
+  {row:[3,7,11,15,19],row2:[27,31,35,39,43,47]},
+  {aisle:true},
+  {row:[2,6,10,14,18,22,24],row2:[26,30,34,38,42,46]},
+  {row:[1,5,9,13,17,21,23],row2:[25,29,33,37,41,45]}
+];
+
+// ═══════════════════════════════════
+// CASH STATUS
+// ═══════════════════════════════════
+function loadCashStatus(){
+  var s=JSON.parse(localStorage.getItem('stm_cash_status')||'null');
+  if(s) cashStatus=s;
+  renderCashStatus();
+}
+function saveCashStatus(){ localStorage.setItem('stm_cash_status',JSON.stringify(cashStatus)); }
+function renderCashStatus(){
+  var box=document.getElementById('cashStatusBox');
+  var lbl=document.getElementById('cashStatLabel');
+  if(cashStatus.open){
+    box.className='cash-status-box open';
+    lbl.className='cash-stat-label open';
+    lbl.textContent='🟢 ღია';
+  } else {
+    box.className='cash-status-box closed';
+    lbl.className='cash-stat-label closed';
+    lbl.textContent='🔴 დახურული';
+  }
+}
+function openCashOpen(){ document.getElementById('cashOpenAmt').value=''; document.getElementById('cashOpenOv').classList.add('show'); }
+function closeCashOpen(){ document.getElementById('cashOpenOv').classList.remove('show'); }
+function confirmCashOpen(){
+  var amt=parseFloat(document.getElementById('cashOpenAmt').value)||0;
+  cashStatus={open:true,openAmt:amt,openTime:new Date().toISOString()};
+  saveCashStatus(); renderCashStatus(); closeCashOpen();
+}
+function openCashClose(){
+  document.getElementById('cashCloseInfo').textContent='სალარო დაიხურება. გახსნისას: '+cashStatus.openAmt+'₾';
+  document.getElementById('cashCloseOv').classList.add('show');
+}
+function closeCashClose(){ document.getElementById('cashCloseOv').classList.remove('show'); }
+function confirmCashClose(){
+  cashStatus={open:false,openAmt:0,openTime:null};
+  saveCashStatus(); renderCashStatus(); closeCashClose();
+}
+
+// ═══════════════════════════════════
+// PRINTER
+// ═══════════════════════════════════
+function testPrinter(){
+  var name=document.getElementById('pname').value.trim()||'Printer1';
+  STM_PRINT.setPrinterName(name);
+  try{
+    setPosId(1); checkPrinterStatus();
+    printText('STM Georgia — Print Test\n\n\n',0,0,false,false,false,0,1);
+    cutPaper(1);
+    var data=getPosData();
+    requestPrint(name,data,function(r){
+      document.getElementById('pdot').className='pdot '+(String(r||'').indexOf('ERROR')===-1?'ok':'err');
+    });
+  }catch(e){ document.getElementById('pdot').className='pdot err'; }
+}
+
+// ═══════════════════════════════════
+// MODE
+// ═══════════════════════════════════
+function setMode(m){
+  mode=m;
+  ['sell','lk','booking','reports'].forEach(function(k){
+    document.getElementById('m-'+k).style.display=k===m?'block':'none';
+    document.getElementById('snav-'+k).classList.toggle('on',k===m);
+  });
+  if(m==='booking') loadBkTours();
+  if(m==='reports') loadReports();
+}
+
+// ═══════════════════════════════════
+// TOURS
+// ═══════════════════════════════════
+function loadTours(){
+  var arr=STM.getTours();
+  var sel=document.getElementById('f-tour');
+  var cur=sel.value;
+  sel.innerHTML='<option value="">— აირჩიეთ ტური —</option>';
+  arr.filter(t=>t.active).forEach(t=>{
+    var o=document.createElement('option');
+    o.value=t.id; o.textContent=t.name;
+    if(String(t.id)===String(cur)) o.selected=true;
+    sel.appendChild(o);
+  });
+}
+function onTourChange(){
+  var id=parseInt(document.getElementById('f-tour').value);
+  var t=STM.getTours().find(t=>t.id===id);
+  var ds=document.getElementById('f-date');
+  if(!t){
+    ds.innerHTML='<option value="">— ჯერ ტური —</option>';
+    document.getElementById('ssec').style.display='none';
+    document.getElementById('sumcard').style.display='none';
+    return;
+  }
+  ds.innerHTML=t.dates.map(d=>'<option value="'+d+'">'+d+'</option>').join('');
+  document.getElementById('qa-p').textContent=(t.price_adult||300)+' ₾';
+  document.getElementById('qc-p').textContent=(t.price_child||250)+' ₾';
+  selSeats=[];
+  updatePaxSeats();
+}
+function refreshSeats(){ renderSeats(); }
+
+// ═══════════════════════════════════
+// QTY
+// ═══════════════════════════════════
+function chQ(type,delta){
+  if(type==='a') qa=Math.max(0,qa+delta);
+  else qc=Math.max(0,qc+delta);
+  document.getElementById('qa').textContent=qa;
+  document.getElementById('qc').textContent=qc;
+  selSeats=[];
+  updatePaxSeats();
+}
+function updatePaxSeats(){
+  var total=qa+qc;
+  var wrap=document.getElementById('pax-forms');
+  if(!total){
+    wrap.innerHTML='';
+    document.getElementById('ssec').style.display='none';
+    document.getElementById('sumcard').style.display='none';
+    return;
+  }
+  wrap.innerHTML=Array.from({length:total},(_,i)=>`
+    <div class="pb">
+      <div class="pt">მგზ. ${i+1} — ${i<qa?'სტანდ.':'ბავშვი'}</div>
+      <div class="fg2">
+        <div><label class="fl">სახელი</label><input class="fi" id="p${i}fn" placeholder="სახელი" style="margin-bottom:0;"></div>
+        <div><label class="fl">გვარი</label><input class="fi" id="p${i}ln" placeholder="გვარი" style="margin-bottom:0;"></div>
+      </div>
+      <div class="fg2" style="margin-top:9px;">
+        <div><label class="fl">პასპ. №</label><input class="fi" id="p${i}pp" placeholder="AB1234567" style="margin-bottom:0;"></div>
+        <div><label class="fl">ტელ.</label><input class="fi" id="p${i}ph" placeholder="+995 5XX" style="margin-bottom:0;"></div>
+      </div>
+    </div>`).join('');
+  document.getElementById('ssec').style.display='block';
+  renderSeats();
+  updateSum();
+}
+
+// ═══════════════════════════════════
+// SEATS (sell mode)
+// ═══════════════════════════════════
+function renderSeats(){
+  var tid=parseInt(document.getElementById('f-tour').value);
+  var bid=parseInt(document.getElementById('f-bus').value);
+  if(!tid) return;
+  var taken=STM.getTakenSeats(tid,bid);
+  var total=qa+qc;
+  document.getElementById('sinfo').textContent='არჩეული: '+selSeats.length+'/'+total;
+  var grid=document.getElementById('sgrid');
+  grid.innerHTML=LAYOUT.map(r=>{
+    if(r.aisle) return '<div style="height:9px;"></div>';
+    var mk=n=>{
+      var t=taken.includes(n), s=selSeats.includes(n);
+      return `<div class="seat ${t?'taken':s?'sel':''}" onclick="togSeat(${n},${t})">${n}</div>`;
+    };
+    return `<div class="srow">${r.row.map(mk).join('')}<div style="width:12px;"></div>${r.row2.map(mk).join('')}</div>`;
+  }).join('');
+}
+function togSeat(n,taken){
+  if(taken) return;
+  var total=qa+qc;
+  var i=selSeats.indexOf(n);
+  if(i>-1) selSeats.splice(i,1);
+  else{
+    if(selSeats.length>=total){alert('მხოლოდ '+total+' ადგ.');return;}
+    selSeats.push(n);
+  }
+  renderSeats();
+  updateSum();
+}
+
+// ═══════════════════════════════════
+// SUMMARY
+// ═══════════════════════════════════
+function updateSum(){
+  var total=qa+qc;
+  if(selSeats.length!==total||!total){document.getElementById('sumcard').style.display='none';return;}
+  var tid=parseInt(document.getElementById('f-tour').value);
+  var t=STM.getTours().find(t=>t.id===tid);
+  var pa=t?.price_adult||300, pc=t?.price_child||250;
+  var tp=qa*pa+qc*pc;
+  var busOpt=document.getElementById('f-bus');
+  document.getElementById('sumcard').style.display='block';
+  document.getElementById('sumcont').innerHTML=`
+    <div class="sr"><span class="sk">ტური</span><span class="sv">${t?.name||''}</span></div>
+    <div class="sr"><span class="sk">ავტ.</span><span class="sv">${busOpt.options[busOpt.selectedIndex].text}</span></div>
+    <div class="sr"><span class="sk">თარ.</span><span class="sv">${document.getElementById('f-date').value}</span></div>
+    <div class="sr"><span class="sk">ადგ.</span><span class="sv">${selSeats.join(', ')}</span></div>
+    ${qa>0?`<div class="sr"><span class="sk">სტანდ.×${qa}</span><span class="sv">${qa*pa} ₾</span></div>`:''}
+    ${qc>0?`<div class="sr"><span class="sk">ბავ.×${qc}</span><span class="sv">${qc*pc} ₾</span></div>`:''}
+    <div class="sr tot"><span class="sk">სულ</span><span class="sv">${tp} ₾</span></div>`;
+}
+
+// ═══════════════════════════════════
+// PAYMENT MODAL
+// ═══════════════════════════════════
+function openPayModal(){
+  var total=qa+qc;
+  if(selSeats.length!==total){showA('salert','e','აირჩიეთ ყველა ადგ.');return;}
+  var tid=parseInt(document.getElementById('f-tour').value);
+  var bid=parseInt(document.getElementById('f-bus').value);
+  var date=document.getElementById('f-date').value;
+  var t=STM.getTours().find(t=>t.id===tid);
+  if(!t||!date){showA('salert','e','ტური + თარიღი');return;}
+  var pax=[];
+  for(var i=0;i<total;i++){
+    var fn=document.getElementById('p'+i+'fn')?.value.trim();
+    var ln=document.getElementById('p'+i+'ln')?.value.trim();
+    var pp=document.getElementById('p'+i+'pp')?.value.trim();
+    var ph=document.getElementById('p'+i+'ph')?.value.trim();
+    if(!fn||!ln||!pp||!ph){showA('salert','e','შეავსეთ მგზ. '+(i+1));return;}
+    pax.push({name:fn,surname:ln,passport:pp,phone:ph,seat:selSeats[i],type:i<qa?'სტანდ.':'ბავ.'});
+  }
+  var pa=t.price_adult||300, pc=t.price_child||250;
+  var tp=qa*pa+qc*pc;
+  pendingSaleData={tid,bid,date,t,pax,pa,pc,tp,selSeats:selSeats.slice()};
+  document.getElementById('payTotal').textContent='სულ: '+tp+' ₾';
+  selPay('cash');
+  document.getElementById('payAlert').innerHTML='';
+  document.getElementById('payOv').classList.add('show');
+}
+function closePayModal(){ document.getElementById('payOv').classList.remove('show'); }
+function selPay(type){
+  selectedPayType=type;
+  ['cash','transfer','onspot','diplomat'].forEach(k=>document.getElementById('pt-'+k).classList.toggle('on',k===type));
+  document.getElementById('cashCurrencyBox').style.display=type==='cash'?'block':'none';
+  if(type==='cash'){
+    ['cur-gel','cur-rub','cur-usd'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('changeInfo').textContent='';
+  }
+}
+function calcChange(){
+  var gel=parseFloat(document.getElementById('cur-gel').value)||0;
+  var rub=parseFloat(document.getElementById('cur-rub').value)||0;
+  var usd=parseFloat(document.getElementById('cur-usd').value)||0;
+  var total_gel=gel+rub*0.035+usd*2.7;
+  if(!pendingSaleData) return;
+  var change=total_gel-pendingSaleData.tp;
+  var ci=document.getElementById('changeInfo');
+  if(total_gel>0){
+    ci.textContent='მიღ.: ~'+total_gel.toFixed(2)+'₾ | '+(change>=0?'ხურდა: '+change.toFixed(2)+'₾':'სარჩ.: '+Math.abs(change).toFixed(2)+'₾');
+    ci.style.color=change>=0?'var(--green)':'var(--red)';
+  } else ci.textContent='';
+}
+async function confirmPay(){
+  if(!pendingSaleData) return;
+  var d=pendingSaleData;
+  var bus=STM.getBuses().find(b=>b.id===d.bid);
+  var code=STM.genCode();
+  var payInfo={type:selectedPayType};
+  if(selectedPayType==='cash'){
+    payInfo.gel=parseFloat(document.getElementById('cur-gel').value)||0;
+    payInfo.rub=parseFloat(document.getElementById('cur-rub').value)||0;
+    payInfo.usd=parseFloat(document.getElementById('cur-usd').value)||0;
+  }
+  var booking={
+    code,tourId:d.tid,tour:d.t.name,from:d.t.from,to:d.t.to,
+    date:d.date,busId:d.bid,busName:bus?.name||'ავტ.'+d.bid,
+    passengers:d.pax,seats:d.selSeats,total:d.tp,
+    payType:selectedPayType,payInfo,
+    used:false,lang:'ka',cashier:true,
+    created:new Date().toISOString()
+  };
+  await STM.addBooking(booking);
+  STM.sendSMS(d.pax[0].phone,STM.smsText(booking,'ka'),code);
+  curBooking=booking;
+  closePayModal();
+  showA('salert','s','✓ გაიყიდა! '+code+' | '+payTypeLabel(selectedPayType));
+  renderReceiptPreview(booking,'ka');
+  openLang();
+  pendingSaleData=null;
+}
+function payTypeLabel(t){return{cash:'ნაღდი',transfer:'გადარიცხვა',onspot:'ადგილზე',diplomat:'დიპლომატი'}[t]||t;}
+
+// ═══════════════════════════════════
+// LOOKUP
+// ═══════════════════════════════════
+function lookupTkt(){
+  var code=document.getElementById('lk-code').value.trim().toUpperCase();
+  var b=STM.getBookings().find(b=>b.code===code);
+  if(!b){showA('lkalert','e','❌ ვერ მოიძ.: '+code);return;}
+  curBooking=b;
+  showA('lkalert','s','✓ ნაპოვნია! '+b.tour);
+  renderReceiptPreview(b,b.lang||'ka');
+  openLang();
+}
+
+// ═══════════════════════════════════
+// RECEIPT
+// ═══════════════════════════════════
+function renderReceiptPreview(b,lang){
+  var L={ka:{tit:'სტმ ჯორჯია',from:'საიდ.',to:'სად',date:'თარ.',bus:'ავტ.',seat:'ადგ.',total:'სულ',note:'კოდი წარუდგინეთ მძღოლს'},en:{tit:'STM GEORGIA',from:'From',to:'To',date:'Date',bus:'Bus',seat:'Seat',total:'Total',note:'Present code to driver'},ru:{tit:'СТМ ДЖОРДЖИЯ',from:'Откуда',to:'Куда',date:'Дата',bus:'Авт.',seat:'Место',total:'Итого',note:'Предъявите код водителю'}}[lang]||{};
+  var p=b.passengers[0];
+  document.getElementById('rzone').style.display='block';
+  document.getElementById('rp').innerHTML=`
+    <div class="rp-center rp-big">${L.tit||'STM'}</div>
+    <div class="rp-line"></div>
+    <div class="rp-code">${b.code}</div>
+    <div class="rp-line"></div>
+    <div class="rp-row"><span>შპს სტმ ჯ.</span><span>ს/ნ 405003302</span></div>
+    <div class="rp-line"></div>
+    <div style="font-weight:bold;margin-bottom:4px;">${p.name} ${p.surname}</div>
+    <div class="rp-row"><span>${L.from}:</span><span>${b.from}</span></div>
+    <div class="rp-row"><span>${L.to}:</span><span>${b.to}</span></div>
+    <div class="rp-row"><span>${L.date}:</span><span>${b.date}</span></div>
+    <div class="rp-row"><span>${L.bus}:</span><span>${b.busName||''}</span></div>
+    <div class="rp-row"><span>${L.seat}:</span><span>${(b.seats||[]).join(', ')}</span></div>
+    <div class="rp-row"><span>გადახდა:</span><span>${payTypeLabel(b.payType||'cash')}</span></div>
+    <div class="rp-line"></div>
+    <div class="rp-row" style="font-weight:bold;font-size:15px;"><span>${L.total}:</span><span>${b.total} ₾</span></div>
+    <div class="rp-line"></div>
+    <div class="rp-center" style="font-size:11px;">${L.note||''}</div>
+    <div class="rp-center" style="font-size:11px;">stm-bus.ge</div>`;
+}
+
+// ═══════════════════════════════════
+// BOOKING PAGE — BIG BUS MAP
+// ═══════════════════════════════════
+function loadBkTours(){
+  var arr=STM.getTours();
+  var sel=document.getElementById('bk-tour');
+  var cur=sel.value;
+  sel.innerHTML='<option value="">— ტური —</option>';
+  arr.filter(t=>t.active).forEach(t=>{
+    var o=document.createElement('option');
+    o.value=t.id; o.textContent=t.name;
+    if(String(t.id)===String(cur)) o.selected=true;
+    sel.appendChild(o);
+  });
+}
+function onBkTourChange(){
+  var id=parseInt(document.getElementById('bk-tour').value);
+  var t=STM.getTours().find(t=>t.id===id);
+  var ds=document.getElementById('bk-date');
+  if(!t){
+    ds.innerHTML='<option value="">— თარიღი —</option>';
+    document.getElementById('bk-bus-area').innerHTML='<div class="ph"><div class="ph-icon">🚌</div><div style="font-size:17px;font-weight:700;color:var(--t2);">აირჩიეთ ტური და თარიღი</div></div>';
+    return;
+  }
+  ds.innerHTML=t.dates.map(d=>'<option value="'+d+'">'+d+'</option>').join('');
+  renderBkBus();
+}
+function renderBkBus(){
+  var tid=parseInt(document.getElementById('bk-tour').value);
+  var date=document.getElementById('bk-date').value;
+  var bid=parseInt(document.getElementById('bk-bus').value)||1;
+  if(!tid||!date){
+    document.getElementById('bk-bus-area').innerHTML='<div class="ph"><div class="ph-icon">🚌</div><div style="font-size:17px;font-weight:700;color:var(--t2);">აირჩიეთ ტური და თარიღი</div></div>';
+    return;
+  }
+  var taken=STM.getTakenSeats(tid,bid);
+  var bookings=STM.getBookings().filter(b=>b.tourId===tid&&b.busId===bid&&b.date===date&&!b.cancelled);
+  var seatToBook={};
+  bookings.forEach(b=>(b.seats||[]).forEach(s=>{seatToBook[s]=b;}));
+  var stats={total:48,booked:taken.length,free:48-taken.length};
+  var area=document.getElementById('bk-bus-area');
+  area.innerHTML=`
+    <div style="display:flex;gap:11px;margin-bottom:13px;flex-wrap:wrap;">
+      <div style="background:#e0f5ec;border:2px solid var(--green);border-radius:10px;padding:10px 18px;text-align:center;">
+        <div style="font-size:22px;font-weight:900;color:var(--green);">${stats.free}</div>
+        <div style="font-size:13px;color:#0e7055;">თავისუფალი</div>
+      </div>
+      <div style="background:#fde8e8;border:2px solid var(--red);border-radius:10px;padding:10px 18px;text-align:center;">
+        <div style="font-size:22px;font-weight:900;color:var(--red);">${stats.booked}</div>
+        <div style="font-size:13px;color:#990000;">დაბრონილი</div>
+      </div>
+      <div style="background:#e8f0fb;border:2px solid var(--blue);border-radius:10px;padding:10px 18px;text-align:center;">
+        <div style="font-size:22px;font-weight:900;color:var(--blue);">48</div>
+        <div style="font-size:13px;">სულ</div>
+      </div>
+    </div>
+    <div class="bus-booking-wrap">
+      <div style="overflow-x:auto;">
+        <div class="bus-big-wrap">
+          <div class="bus-big-front"><div class="bwi"></div><div style="font-size:10px;color:#607088;">🚌</div><div class="bwi"></div></div>
+          <div id="bk-sgrid"></div>
+        </div>
+      </div>
+      <div class="leg" style="margin-top:11px;">
+        <div class="li"><div class="ld f" style="width:16px;height:16px;"></div>თავისუფალი</div>
+        <div class="li"><div style="width:16px;height:16px;border-radius:3px;border:2px solid #c62828;background:#e57373;"></div>დაბრონილი</div>
+      </div>
+    </div>`;
+  var grid=document.getElementById('bk-sgrid');
+  if(grid){
+    grid.innerHTML=LAYOUT.map(r=>{
+      if(r.aisle) return '<div style="height:11px;"></div>';
+      var mk=n=>{
+        var isBooked=!!seatToBook[n];
+        return `<div class="seat-big${isBooked?' booked-big':''}" onclick="openSeatDetail(${n},${isBooked},${tid},'${date}',${bid})">${n}</div>`;
+      };
+      return `<div class="srow-big">${r.row.map(mk).join('')}<div style="width:18px;"></div>${r.row2.map(mk).join('')}</div>`;
+    }).join('');
+  }
+}
+function openSeatDetail(seatNum,isBooked,tid,date,bid){
+  bkSelectedSeat={seatNum,tid,date,bid};
+  bkSelectedSeatBooked=isBooked;
+  document.getElementById('seatDetailTitle').textContent='ადგილი #'+seatNum+(isBooked?' — 🔴 დაბრონილი':' — 🟢 თავისუფალი');
+  var info='';
+  var noteVal='';
+  if(isBooked){
+    var b=STM.getBookings().find(b=>b.tourId===tid&&b.busId===bid&&b.date===date&&(b.seats||[]).includes(seatNum)&&!b.cancelled);
+    if(b){
+      var p=b.passengers&&b.passengers[0]||{};
+      info='კოდი: '+b.code+(p.name?' | '+p.name+' '+p.surname:'');
+      noteVal=(b.note||'')||(p.name?p.name+' '+p.surname:'');
+    }
+  }
+  document.getElementById('seatDetailInfo').textContent=info;
+  document.getElementById('seatDetailNote').value=noteVal;
+  document.getElementById('seatDetailBook').style.display=isBooked?'none':'inline-flex';
+  document.getElementById('seatDetailDel').style.display=isBooked?'inline-flex':'none';
+  document.getElementById('seatDetailOv').classList.add('show');
+}
+function closeSeatDetail(){ document.getElementById('seatDetailOv').classList.remove('show'); bkSelectedSeat=null; }
+async function confirmSeatBook(){
+  if(!bkSelectedSeat) return;
+  var d=bkSelectedSeat;
+  var note=document.getElementById('seatDetailNote').value.trim();
+  var t=STM.getTours().find(t=>t.id===d.tid);
+  if(!t){ closeSeatDetail(); return; }
+  var code=STM.genCode();
+  var booking={
+    code,tourId:d.tid,tour:t.name,from:t.from,to:t.to,
+    date:d.date,busId:d.bid,busName:'ავტ.'+d.bid,
+    passengers:[{name:'(დაბრონვა)',surname:'',passport:'',phone:'',seat:d.seatNum,type:'სტანდ.'}],
+    seats:[d.seatNum],total:0,
+    payType:'onspot',payInfo:{},note,
+    used:false,lang:'ka',cashier:true,
+    created:new Date().toISOString()
+  };
+  await STM.addBooking(booking);
+  closeSeatDetail();
+  renderBkBus();
+}
+async function confirmSeatDelete(){
+  if(!bkSelectedSeat) return;
+  var d=bkSelectedSeat;
+  var b=STM.getBookings().find(b=>b.tourId===d.tid&&b.busId===d.bid&&b.date===d.date&&(b.seats||[]).includes(d.seatNum)&&!b.cancelled);
+  if(!b){closeSeatDetail();return;}
+  if(!confirm('წაიშალოს ბრონი? '+b.code)) return;
+  await STM.deleteBooking(b.code);
+  closeSeatDetail();
+  renderBkBus();
+}
+
+// ═══════════════════════════════════
+// REPORTS
+// ═══════════════════════════════════
+function loadReports(){
+  var tours=STM.getTours();
+  var sel=document.getElementById('rep-tour');
+  var cur=sel.value;
+  sel.innerHTML='<option value="">— ყველა —</option>';
+  tours.forEach(t=>{
+    var o=document.createElement('option');
+    o.value=t.id; o.textContent=t.name;
+    if(String(t.id)===String(cur)) o.selected=true;
+    sel.appendChild(o);
+  });
+  renderReports();
+}
+function clearRepFilters(){
+  document.getElementById('rep-from').value='';
+  document.getElementById('rep-to').value='';
+  document.getElementById('rep-tour').value='';
+  document.getElementById('rep-code').value='';
+  renderReports();
+}
+function renderReports(){
+  var from=document.getElementById('rep-from').value;
+  var to=document.getElementById('rep-to').value;
+  var tourId=document.getElementById('rep-tour').value;
+  var codeQ=document.getElementById('rep-code').value.trim().toUpperCase();
+  var filtered=STM.getBookings().filter(b=>{
+    if(codeQ&&!b.code.includes(codeQ)) return false;
+    if(tourId&&String(b.tourId)!==String(tourId)) return false;
+    if(from&&b.date&&b.date<from) return false;
+    if(to&&b.date&&b.date>to) return false;
+    return true;
+  });
+  var totalSum=filtered.reduce((s,b)=>s+(b.total||0),0);
+  // pay breakdown
+  var byPay={cash:0,transfer:0,onspot:0,diplomat:0};
+  filtered.forEach(b=>{ var k=b.payType||'cash'; if(byPay[k]!==undefined) byPay[k]+=(b.total||0); });
+  document.getElementById('rep-stats').innerHTML=`
+    <div style="background:#e8f0fb;border:2px solid var(--blue);border-radius:10px;padding:9px 16px;text-align:center;">
+      <div style="font-size:20px;font-weight:900;color:var(--blue);">${filtered.length}</div>
+      <div style="font-size:12px;">ბილეთი</div>
+    </div>
+    <div style="background:#e0f5ec;border:2px solid var(--green);border-radius:10px;padding:9px 16px;text-align:center;">
+      <div style="font-size:20px;font-weight:900;color:var(--green);">${totalSum} ₾</div>
+      <div style="font-size:12px;">სულ</div>
+    </div>
+    <div style="background:#f8f4ff;border:2px solid #8066cc;border-radius:10px;padding:9px 16px;text-align:center;">
+      <div style="font-size:14px;font-weight:700;color:#6044aa;">${byPay.cash}₾ ნაღდი</div>
+      <div style="font-size:14px;font-weight:700;color:#6044aa;">${byPay.transfer}₾ გადარ.</div>
+    </div>`;
+  if(!filtered.length){
+    document.getElementById('rep-table-wrap').innerHTML='<div class="ph" style="padding:30px;"><div class="ph-icon">📄</div><div>ბილეთი ვერ მოიძ.</div></div>';
+    return;
+  }
+  var ptCls={cash:'badge-g',transfer:'badge-b',onspot:'badge-a',diplomat:'badge-r'};
+  var rows=filtered.map(b=>{
+    var p=b.passengers&&b.passengers[0]||{};
+    var pt=b.payType||'cash';
+    return `<tr>
+      <td><span style="font-weight:800;letter-spacing:1px;font-size:13px;">${b.code}</span></td>
+      <td style="font-size:13px;">${b.tour||''}</td>
+      <td style="font-size:13px;">${b.date||''}</td>
+      <td style="font-size:13px;">${p.name||''} ${p.surname||''}</td>
+      <td style="font-size:13px;">${(b.seats||[]).join(', ')}</td>
+      <td><span class="badge ${ptCls[pt]||'badge-b'}">${payTypeLabel(pt)}</span></td>
+      <td style="font-weight:800;font-size:14px;">${b.total||0}₾</td>
+      <td>
+        <div style="display:flex;gap:4px;">
+          <button class="btn btn-p" style="padding:4px 9px;font-size:12px;" onclick="repPrint('${b.code}')">🖨</button>
+          <button class="btn btn-gh" style="padding:4px 9px;font-size:12px;" onclick="repEdit('${b.code}')">✏️</button>
+          <button class="btn btn-r" style="padding:4px 9px;font-size:12px;" onclick="repDelete('${b.code}')">🗑</button>
+        </div>
+      </td>
+    </tr>`;
+  }).join('');
+  document.getElementById('rep-table-wrap').innerHTML=`
+    <table class="rep-table">
+      <thead><tr>
+        <th>კოდი</th><th>ტური</th><th>თარიღი</th><th>მგზავრი</th><th>ადგ.</th><th>გადახდა</th><th>თანხა</th><th>მოქ.</th>
+      </tr></thead>
+      <tbody>${rows}</tbody>
+    </table>`;
+}
+function repPrint(code){
+  var b=STM.getBookings().find(b=>b.code===code);
+  if(!b) return;
+  curBooking=b;
+  renderReceiptPreview(b,b.lang||'ka');
+  openLang();
+}
+async function repDelete(code){
+  if(!confirm('წაიშალოს ბილეთი '+code+'?')) return;
+  await STM.deleteBooking(code);
+  renderReports();
+}
+function repEdit(code){
+  var b=STM.getBookings().find(b=>b.code===code);
+  if(!b) return;
+  var p=b.passengers&&b.passengers[0]||{};
+  document.getElementById('editBookContent').innerHTML=`
+    <input type="hidden" id="edit-code" value="${b.code}">
+    <div class="fg2" style="margin-bottom:11px;">
+      <div><label class="fl">სახელი</label><input class="fi" id="edit-fn" value="${p.name||''}" style="margin-bottom:0;"></div>
+      <div><label class="fl">გვარი</label><input class="fi" id="edit-ln" value="${p.surname||''}" style="margin-bottom:0;"></div>
+    </div>
+    <div class="fg2" style="margin-bottom:11px;">
+      <div><label class="fl">პასპ.</label><input class="fi" id="edit-pp" value="${p.passport||''}" style="margin-bottom:0;"></div>
+      <div><label class="fl">ტელ.</label><input class="fi" id="edit-ph" value="${p.phone||''}" style="margin-bottom:0;"></div>
+    </div>
+    <div class="fg2" style="margin-bottom:11px;">
+      <div><label class="fl">თარიღი</label><input type="date" class="fi" id="edit-date" value="${b.date||''}" style="margin-bottom:0;"></div>
+      <div><label class="fl">ადგ. (მძ.გამ.)</label><input class="fi" id="edit-seats" value="${(b.seats||[]).join(',')}" style="margin-bottom:0;"></div>
+    </div>
+    <div class="fg2">
+      <div><label class="fl">თანხა (₾)</label><input type="number" class="fi" id="edit-total" value="${b.total||0}" style="margin-bottom:0;"></div>
+      <div><label class="fl">გადახდა</label>
+        <select class="fi" id="edit-paytype" style="margin-bottom:0;">
+          <option value="cash" ${b.payType==='cash'?'selected':''}>ნაღდი</option>
+          <option value="transfer" ${b.payType==='transfer'?'selected':''}>გადარიცხვა</option>
+          <option value="onspot" ${b.payType==='onspot'?'selected':''}>ადგილზე</option>
+          <option value="diplomat" ${b.payType==='diplomat'?'selected':''}>დიპლომატი</option>
+        </select>
+      </div>
+    </div>`;
+  document.getElementById('editBookOv').classList.add('show');
+}
+function closeEditBook(){ document.getElementById('editBookOv').classList.remove('show'); }
+async function saveEditBook(){
+  var code=document.getElementById('edit-code').value;
+  var all=STM.getBookings();
+  var b=all.find(b=>b.code===code);
+  if(!b){closeEditBook();return;}
+  if(b.passengers&&b.passengers[0]){
+    b.passengers[0].name=document.getElementById('edit-fn').value.trim();
+    b.passengers[0].surname=document.getElementById('edit-ln').value.trim();
+    b.passengers[0].passport=document.getElementById('edit-pp').value.trim();
+    b.passengers[0].phone=document.getElementById('edit-ph').value.trim();
+  }
+  b.date=document.getElementById('edit-date').value;
+  b.seats=document.getElementById('edit-seats').value.split(',').map(s=>parseInt(s.trim())).filter(n=>!isNaN(n));
+  b.total=parseFloat(document.getElementById('edit-total').value)||0;
+  b.payType=document.getElementById('edit-paytype').value;
+  await STM.saveBookings(all);
+  closeEditBook();
+  renderReports();
+}
+
+// ═══════════════════════════════════
+// LANG / PRINT
+// ═══════════════════════════════════
+function openLang(){ document.getElementById('langOv').classList.add('show'); }
+function closeLang(){ document.getElementById('langOv').classList.remove('show'); }
+async function doPrint(lang){
+  closeLang();
+  if(!curBooking) return;
+  renderReceiptPreview(curBooking,lang);
+  await STM_PRINT.smartPrint('ticket',curBooking,lang);
+}
+function hideR(){ document.getElementById('rzone').style.display='none'; }
+function cancelKeeyz(){ document.getElementById('keepzOv').classList.remove('show'); }
+
+// ═══════════════════════════════════
+// HELPERS
+// ═══════════════════════════════════
+function showA(id,type,msg){
+  var el=document.getElementById(id);if(!el)return;
+  el.innerHTML=`<div class="alert al-${type==='s'?'s':'e'}">${msg}</div>`;
+  if(type!=='e') setTimeout(()=>el.innerHTML='',5000);
+}
+function resetAll(){
+  qa=0;qc=0;selSeats=[];curBooking=null;pendingSaleData=null;
+  document.getElementById('qa').textContent='0';
+  document.getElementById('qc').textContent='0';
+  document.getElementById('pax-forms').innerHTML='';
+  document.getElementById('ssec').style.display='none';
+  document.getElementById('sumcard').style.display='none';
+  document.getElementById('salert').innerHTML='';
+  hideR();
+}
+
+// ═══════════════════════════════════
+// INIT
+// ═══════════════════════════════════
+(function(){
+  var sess=STM.requireAuth('cashier');
+  if(!sess) return;
+  document.getElementById('cashier-user').textContent='👤 '+sess.displayName;
+  document.getElementById('cashUserName').textContent=sess.displayName;
+})();
+loadCashStatus();
+loadTours();
+STM.onSync(()=>{
+  loadTours();
+  if(mode==='booking') renderBkBus();
+  if(mode==='reports') renderReports();
+});
+setInterval(()=>{if(qa+qc>0)renderSeats();},6000);
+document.getElementById('pname').addEventListener('change',function(){STM_PRINT.setPrinterName(this.value.trim());});
+</script>
+</body>
+</html>
